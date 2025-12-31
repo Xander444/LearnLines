@@ -1,0 +1,2318 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Line Learner</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root {
+      /* Light theme defaults */
+      --bg: #f5f5f7;
+      --paper: #ffffff;
+      --nav: #f9f9fb;
+      --accent: #ffcc00;
+      --accent-soft: #fff4c2;
+      --accent-strong: #ffb300;
+      --border: #d0d3dc;
+      --text: #1c1c1e;
+      --muted: #6b6b74;
+      --danger: #ff3b30;
+      --radius-lg: 14px;
+      --radius-xl: 18px;
+      --shadow-soft: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    /* Dark mode overrides */
+    body[data-theme="dark"] {
+      --bg: #050816;
+      --paper: #020617;
+      --nav: #020617;
+      --accent: #ffcc00;
+      --accent-soft: #4b3b00;
+      --accent-strong: #ffd54a;
+      --border: #1f2933;
+      --text: #f9fafb;
+      --muted: #9ca3af;
+      --danger: #ff6b6b;
+      --shadow-soft: 0 18px 38px rgba(0,0,0,0.6);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 900px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      position: relative;
+    }
+
+    /* Screens */
+
+    .screen {
+      display: none;
+      flex: 1;
+      padding: 0 12px 12px;
+    }
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Nav bar */
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(249,249,251,0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      padding: 10px 12px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    body[data-theme="dark"] .nav {
+      background: rgba(9,9,11,0.96);
+      border-bottom-color: rgba(148,163,184,0.3);
+    }
+
+    .nav-title {
+      font-weight: 600;
+      font-size: 17px;
+      letter-spacing: 0.02em;
+    }
+
+    .nav-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .nav-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      border: none;
+      background: none;
+      color: #007aff;
+      font-size: 16px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    body[data-theme="dark"] .nav-btn {
+      color: #4f9dff;
+    }
+
+    .nav-btn.disabled {
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    /* Theme toggle */
+
+    .theme-toggle {
+      position: fixed;
+      right: 14px;
+      bottom: 14px;
+      z-index: 30;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: rgba(255,255,255,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+    }
+    body[data-theme="dark"] .theme-toggle {
+      background: rgba(15,23,42,0.95);
+      border-color: rgba(148,163,184,0.4);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+    }
+
+    /* Scene list */
+
+    .list-container {
+      margin-top: 10px;
+      border-radius: var(--radius-xl);
+      background: var(--paper);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+
+    .list-header {
+      padding: 10px 14px 6px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      font-size: 13px;
+      color: var(--muted);
+    }
+    body[data-theme="dark"] .list-header {
+      border-bottom-color: rgba(148,163,184,0.25);
+    }
+
+    .scene-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .scene-cell {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+      background: var(--paper);
+      transition: background 0.12s ease;
+    }
+    .scene-cell:last-child {
+      border-bottom: none;
+    }
+    body[data-theme="dark"] .scene-cell {
+      border-bottom-color: rgba(31,41,55,0.8);
+    }
+
+    .scene-cell:active {
+      background: #f2f2f7;
+    }
+    @media (hover:hover) {
+      .scene-cell:hover {
+        background: #f7f7fb;
+      }
+      body[data-theme="dark"] .scene-cell:hover {
+        background: #020617;
+      }
+    }
+    body[data-theme="dark"] .scene-cell:active {
+      background: #020617;
+    }
+
+    .scene-cell-main {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: baseline;
+    }
+    .scene-name {
+      font-size: 16px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .scene-mini-meta {
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .scene-cell-sub {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #f2f2f7;
+      border: 1px solid rgba(0,0,0,0.04);
+      color: #3a3a3c;
+    }
+    body[data-theme="dark"] .badge {
+      background: #020617;
+      border-color: rgba(148,163,184,0.4);
+      color: var(--muted);
+    }
+
+    .empty-state {
+      padding: 16px 14px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .footer-note {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* Cards / sheets */
+
+    .sheet {
+      margin-top: 12px;
+      border-radius: var(--radius-xl);
+      background: var(--paper);
+      box-shadow: var(--shadow-soft);
+      padding: 14px 14px 16px;
+    }
+    .sheet.small {
+      margin-top: 8px;
+      padding: 10px 12px 12px;
+    }
+
+    .field-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .text-input {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 10px 11px;
+      font-size: 16px;
+      outline: none;
+      background: #fdfdfd;
+      color: var(--text);
+    }
+    body[data-theme="dark"] .text-input {
+      background: #020617;
+    }
+    .text-input:focus {
+      border-color: var(--accent-strong);
+      box-shadow: 0 0 0 2px rgba(255,204,0,0.3);
+    }
+
+    .hint {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Editor */
+
+    .editor-wrapper {
+      margin-top: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .editor-card {
+      border-radius: var(--radius-xl);
+      background: var(--paper);
+      box-shadow: var(--shadow-soft);
+      padding: 14px 14px 16px;
+    }
+
+    .editor-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .editor-title {
+      font-size: 17px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .editor-subtext {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 7px 12px;
+      font-size: 13px;
+      background: #f2f2f7;
+      color: #111827;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      min-height: 30px;
+    }
+    body[data-theme="dark"] .btn {
+      background: #020617;
+      border-color: rgba(75,85,99,0.9);
+      color: var(--text);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #ffe58a, #ffd04d);
+      border-color: #ffc93a;
+      color: #3a2a00;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+    body[data-theme="dark"] .btn-primary {
+      background: linear-gradient(180deg, #facc15, #eab308);
+      border-color: #eab308;
+      color: #111827;
+    }
+
+    .btn-primary:active:not(:disabled) {
+      box-shadow: 0 1px 2px rgba(0,0,0,0.25) inset;
+      transform: translateY(1px);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border-color: transparent;
+      color: #007aff;
+      padding-inline: 4px;
+    }
+    body[data-theme="dark"] .btn-ghost {
+      color: #4f9dff;
+    }
+
+    .btn-danger {
+      background: #fff2f2;
+      border-color: #ffc9c7;
+      color: var(--danger);
+    }
+    body[data-theme="dark"] .btn-danger {
+      background: rgba(239,68,68,0.08);
+      border-color: rgba(239,68,68,0.6);
+    }
+
+    .btn-big {
+      flex: 1;
+      justify-content: center;
+      padding-block: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      position: relative;
+      overflow: hidden;
+      border-width: 2px;
+    }
+
+    .btn-big::before {
+      content: "Hold while it's YOUR line";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .btn-big.active {
+      background: linear-gradient(145deg, #ffe699, #ffd04d);
+      border-color: #ffb300;
+      box-shadow: 0 0 0 2px rgba(255,204,0,0.5), 0 10px 18px rgba(0,0,0,0.2);
+    }
+    body[data-theme="dark"] .btn-big.active {
+      background: linear-gradient(145deg, #facc15, #eab308);
+      box-shadow: 0 0 0 2px rgba(250,204,21,0.6), 0 14px 30px rgba(0,0,0,0.6);
+    }
+
+    .btn-big.active::before {
+      content: "Recording YOUR line…";
+      color: #4a2a00;
+      font-weight: 700;
+    }
+
+    .field-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    .field-row label {
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    select, input[type="number"] {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      font-size: 13px;
+      background: #f7f7fa;
+      outline: none;
+      color: var(--text);
+    }
+    body[data-theme="dark"] select,
+    body[data-theme="dark"] input[type="number"] {
+      background: #020617;
+      border-color: rgba(75,85,99,0.9);
+    }
+
+    select:focus,
+    input[type="number"]:focus {
+      border-color: var(--accent-strong);
+      box-shadow: 0 0 0 2px rgba(255,204,0,0.25);
+    }
+
+    .speed-display {
+      font-variant-numeric: tabular-nums;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .status-bar {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #f2f2f7;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    body[data-theme="dark"] .status-pill {
+      background: #020617;
+      border-color: rgba(75,85,99,0.8);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #c7c7cc;
+    }
+    .status-dot.live {
+      background: #32d74b;
+    }
+    .status-dot.playing {
+      background: #007aff;
+    }
+
+    .timeline {
+      margin-top: 12px;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(0,0,0,0.06);
+      background: #fafafc;
+      padding: 9px 11px 10px;
+      font-size: 12px;
+    }
+    body[data-theme="dark"] .timeline {
+      background: #020617;
+      border-color: rgba(75,85,99,0.8);
+    }
+
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      color: var(--muted);
+    }
+
+    .timeline-chips {
+      display: inline-flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #f2f2f7;
+      border: 1px solid rgba(0,0,0,0.05);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    body[data-theme="dark"] .chip {
+      background: #020617;
+      border-color: rgba(75,85,99,0.8);
+    }
+
+    .line-list {
+      margin-top: 6px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .line-pill {
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #fff7d6;
+      border: 1px solid #ffe49b;
+      font-size: 11px;
+      color: #5b3d00;
+      cursor: pointer;
+    }
+    body[data-theme="dark"] .line-pill {
+      background: rgba(253,224,71,0.1);
+      border-color: rgba(253,224,71,0.7);
+      color: #fef9c3;
+    }
+
+    .line-pill-note::after {
+      content: "📝";
+      margin-left: 4px;
+      font-size: 11px;
+    }
+
+    .bookmark-list {
+      margin-top: 6px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .bookmark-pill {
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #e5f0ff;
+      border: 1px solid #b3d0ff;
+      font-size: 11px;
+      color: #174074;
+      cursor: pointer;
+    }
+    body[data-theme="dark"] .bookmark-pill {
+      background: rgba(59,130,246,0.2);
+      border-color: rgba(59,130,246,0.8);
+      color: #dbeafe;
+    }
+
+    .audio-native {
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .msg {
+      margin-top: 8px;
+      font-size: 12px;
+    }
+    .msg-info {
+      color: var(--muted);
+    }
+    .msg-error {
+      color: var(--danger);
+    }
+
+    /* Self-rating panel */
+
+    .rating-panel {
+      margin-top: 10px;
+      border-radius: 12px;
+      background: #f2f2f7;
+      border: 1px solid rgba(0,0,0,0.05);
+      padding: 8px 10px 10px;
+      display: none;
+    }
+    body[data-theme="dark"] .rating-panel {
+      background: #020617;
+      border-color: rgba(75,85,99,0.8);
+    }
+
+    .rating-question {
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .rating-buttons {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+
+    .rating-btn-right {
+      border-color: #34c759;
+      background: #e7fbe9;
+      color: #065f1e;
+    }
+    body[data-theme="dark"] .rating-btn-right {
+      background: rgba(22,163,74,0.18);
+      border-color: rgba(34,197,94,0.9);
+      color: #bbf7d0;
+    }
+
+    .rating-btn-somewhat {
+      border-color: #ffcc00;
+      background: #fff7d6;
+      color: #5b3d00;
+    }
+    body[data-theme="dark"] .rating-btn-somewhat {
+      background: rgba(250,204,21,0.12);
+      border-color: rgba(234,179,8,0.9);
+      color: #fef3c7;
+    }
+
+    .rating-btn-wrong {
+      border-color: #ff3b30;
+      background: #ffe8e6;
+      color: #7f1d1d;
+    }
+    body[data-theme="dark"] .rating-btn-wrong {
+      background: rgba(248,113,113,0.12);
+      border-color: rgba(239,68,68,0.9);
+      color: #fecaca;
+    }
+
+    .rating-progress {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* Score summary */
+
+    #scoreSummary {
+      display: none;
+      font-size: 13px;
+    }
+
+    #scoreSummary strong {
+      font-weight: 600;
+    }
+
+    /* Session goal */
+    .session-status {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    @media (min-width: 700px) {
+      .editor-wrapper {
+        flex-direction: row;
+        align-items: flex-start;
+      }
+      .editor-card.main {
+        flex: 2;
+      }
+      .editor-card.side {
+        flex: 1.2;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- LIST SCREEN -->
+  <div id="screen-list" class="screen active">
+    <div class="nav">
+      <div>
+        <div class="nav-title">Scenes</div>
+        <div class="nav-subtitle">Shows work like files. Tap to open.</div>
+      </div>
+      <div class="nav-group">
+        <button id="exportBtn" class="nav-btn" type="button">Export</button>
+        <button id="importBtn" class="nav-btn" type="button">Import</button>
+        <input id="importFileInput" type="file" accept="application/json" style="display:none" />
+        <button id="newSceneBtn" class="nav-btn" type="button">New</button>
+      </div>
+    </div>
+
+    <div class="list-container">
+      <div class="list-header">All scenes (grouped by show / project)</div>
+      <div id="sceneList" class="scene-list"></div>
+      <div id="sceneListEmpty" class="empty-state" style="display:none;">
+        No scenes yet. Tap <strong>New</strong> to create your first one.
+      </div>
+    </div>
+
+    <div class="footer-note">
+      Shows are your “files” – e.g. <em>Hamlet</em>, <em>Cabaret</em>, <em>Short Film</em>.
+    </div>
+  </div>
+
+  <!-- NEW SCENE SCREEN -->
+  <div id="screen-new" class="screen">
+    <div class="nav">
+      <button id="cancelNewSceneBtn" class="nav-btn" type="button">Scenes</button>
+      <div class="nav-title">New Scene</div>
+      <button id="createSceneConfirmBtn" class="nav-btn disabled" type="button">Create</button>
+    </div>
+
+    <div class="sheet">
+      <div class="field-label">Scene title</div>
+      <input id="newSceneNameInput" class="text-input" type="text"
+             placeholder="e.g. Act 2 – Balcony" autocomplete="off" />
+      <div class="field-label" style="margin-top:10px;">Show / project (acts like a file)</div>
+      <input id="newSceneShowInput" class="text-input" type="text"
+             placeholder="e.g. Romeo & Juliet" autocomplete="off" list="showList" />
+      <datalist id="showList"></datalist>
+      <div class="hint">
+        Choose an existing show name or type a new one – recordings from the same show stay together.
+      </div>
+    </div>
+  </div>
+
+  <!-- EDITOR SCREEN -->
+  <div id="screen-editor" class="screen">
+    <div class="nav">
+      <button id="backToListBtn" class="nav-btn" type="button">Scenes</button>
+      <div>
+        <div id="editorSceneTitle" class="nav-title">Scene</div>
+        <div id="editorSceneSubtitle" class="nav-subtitle"></div>
+      </div>
+      <div class="nav-group">
+        <button id="renameSceneBtn" class="nav-btn disabled" type="button">Rename</button>
+        <button id="deleteSceneBtn" class="nav-btn disabled" type="button" style="color:#ff3b30;">Delete</button>
+      </div>
+    </div>
+
+    <div class="editor-wrapper">
+      <div class="editor-card main">
+        <div class="editor-header-row">
+          <div class="editor-title">Record & Mark Lines</div>
+          <label style="font-size:11px;display:flex;align-items:center;gap:4px;">
+            <input id="monologueCheckbox" type="checkbox" />
+            Monologue scene
+          </label>
+        </div>
+        <div class="editor-subtext">
+          1) Record the whole scene out loud.<br>
+          2) Hold the yellow button whenever it’s <strong>your line</strong>.<br>
+          3) Use playback modes to drill, cue, or loop.
+        </div>
+
+        <div class="btn-row">
+          <button id="startRecBtn" class="btn btn-primary" type="button">
+            ● Record scene
+          </button>
+          <button id="stopRecBtn" class="btn" type="button" disabled>
+            ⏹ Stop
+          </button>
+          <button id="reRecordBtn" class="btn" type="button" disabled>
+            ↻ Re-record
+          </button>
+        </div>
+
+        <div class="btn-row">
+          <button id="myLineBtn" class="btn btn-big" type="button" disabled></button>
+        </div>
+
+        <div class="status-bar">
+          <div class="status-pill">
+            <span id="recDot" class="status-dot"></span>
+            <span id="recStatus">Not recording</span>
+          </div>
+          <div class="status-pill">
+            <span id="playDot" class="status-dot"></span>
+            <span id="playStatus">Not playing</span>
+          </div>
+        </div>
+
+        <audio id="audioPlayer" class="audio-native" controls style="display:none;"></audio>
+
+        <div id="messageArea" class="msg msg-info"></div>
+      </div>
+
+      <div class="editor-card side">
+        <div class="editor-header-row">
+          <div class="editor-title" style="font-size:15px;">Practice & Tools</div>
+        </div>
+
+        <div class="field-row">
+          <label for="modeSelect">Mode</label>
+          <select id="modeSelect">
+            <option value="1">1 · Full scene</option>
+            <option value="2">2 · Pause 1.5× before your line</option>
+            <option value="3">3 · Pause 1× before your line</option>
+            <option value="4">4 · Cue-only (silent on your lines)</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label for="speedInput">Speed</label>
+          <input id="speedInput" type="number" min="0.5" max="2.0" step="0.05" value="1.0" />
+          <span id="speedDisplay" class="speed-display">1.00×</span>
+        </div>
+
+        <div class="field-row">
+          <label>Scoring</label>
+          <label style="display:flex;align-items:center;gap:4px;">
+            <input id="enableRating" type="checkbox" checked />
+            <span>Ask after each line</span>
+          </label>
+        </div>
+
+        <div class="field-row">
+          <label for="goalMinutes">Session goal</label>
+          <input id="goalMinutes" type="number" min="0" step="5" value="0" style="width:70px;" />
+          <span style="font-size:12px;color:var(--muted);">minutes</span>
+        </div>
+        <div id="sessionStatus" class="session-status"></div>
+
+        <div class="btn-row">
+          <button id="playFromStartBtn" class="btn btn-primary" type="button" disabled>
+            ▶ From start
+          </button>
+          <button id="playFromLastBtn" class="btn" type="button" disabled>
+            ▶ From last line
+          </button>
+          <button id="lineDrillBtn" class="btn" type="button" disabled>
+            🎯 Line drill
+          </button>
+          <button id="warmupBtn" class="btn" type="button" disabled>
+            🔥 Warm-up
+          </button>
+          <button id="repeatSceneBtn" class="btn" type="button" disabled>
+            🔁 Repeat full
+          </button>
+          <button id="stopPlayBtn" class="btn" type="button" disabled>
+            ⏹ Stop
+          </button>
+        </div>
+
+        <div id="timeline" class="timeline" style="display:none;">
+          <div class="timeline-header">
+            <span>Scene summary</span>
+            <div class="timeline-chips">
+              <span class="chip">
+                <span>⏱</span>
+                <span id="durationLabel">0.0s</span>
+              </span>
+              <span class="chip">
+                <span>🎭</span>
+                <span id="linesLabel">0 lines</span>
+              </span>
+              <span class="chip" id="scoreChip" style="display:none;">
+                <span>⭐</span>
+                <span id="scoreChipText"></span>
+              </span>
+            </div>
+          </div>
+          <div id="lineList" class="line-list"></div>
+          <div style="margin-top:8px;">
+            <button id="addBookmarkBtn" class="btn btn-ghost" type="button" style="font-size:11px;">
+              ➕ Add bookmark at current time
+            </button>
+            <div id="bookmarkList" class="bookmark-list"></div>
+          </div>
+        </div>
+
+        <!-- Self-rating panel -->
+        <div id="ratingPanel" class="rating-panel">
+          <div id="ratingQuestion" class="rating-question">Did you get your line right?</div>
+          <div class="rating-buttons">
+            <button class="btn rating-btn rating-btn-right" data-rating="right" type="button">✓ Right</button>
+            <button class="btn rating-btn rating-btn-somewhat" data-rating="somewhat" type="button">~ Somewhat</button>
+            <button class="btn rating-btn rating-btn-wrong" data-rating="wrong" type="button">✗ Wrong</button>
+          </div>
+          <div id="ratingProgress" class="rating-progress"></div>
+        </div>
+
+        <!-- Score summary -->
+        <div id="scoreSummary" class="sheet small">
+          <div id="scoreSummaryText"></div>
+        </div>
+
+        <div class="hint" style="margin-top:10px;">
+          Turn scoring on when you want to test yourself, or off when you just want to run the scene.
+          “Somewhat” counts as half-correct. Tap a line chip to add notes.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Theme toggle -->
+  <div id="themeToggle" class="theme-toggle">☾</div>
+
+</div>
+
+<script>
+(function() {
+  const STORAGE_KEY = 'lineLearnerScenes_v5';
+  const THEME_KEY = 'lineLearnerTheme';
+  const SESSION_KEY = 'lineLearnerSession';
+  const CONTEXT_SECONDS = 0.8; // context before your line in line-drill mode
+
+  /* Scene shape:
+     {
+       id, name, show, created,
+       audioDataUrl, duration,
+       lines:[{start,end,note?}],
+       isMonologue?: boolean,
+       lastPracticed?: number,
+       lastScore?: number,
+       practiceCount?: number,
+       bookmarks?: [{time,label}]
+     }
+  */
+  let scenes = [];
+  let currentSceneId = null;
+
+  // Session meta
+  let sessionStart = null;
+  let sessionAccumMs = 0;
+  let sessionTimerId = null;
+
+  // Screens
+  const screenList   = document.getElementById('screen-list');
+  const screenNew    = document.getElementById('screen-new');
+  const screenEditor = document.getElementById('screen-editor');
+
+  function showScreen(id) {
+    [screenList, screenNew, screenEditor].forEach(scr => scr.classList.remove('active'));
+    if (id === 'list')   screenList.classList.add('active');
+    if (id === 'new')    screenNew.classList.add('active');
+    if (id === 'editor') screenEditor.classList.add('active');
+  }
+
+  // Theme handling
+  const themeToggle = document.getElementById('themeToggle');
+
+  function applyTheme(theme) {
+    document.body.dataset.theme = theme;
+    localStorage.setItem(THEME_KEY, theme);
+    themeToggle.textContent = theme === 'dark' ? '☀︎' : '☾';
+  }
+
+  (function initTheme() {
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved === 'dark' || saved === 'light') {
+      applyTheme(saved);
+    } else {
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      applyTheme(prefersDark ? 'dark' : 'light');
+    }
+  })();
+
+  themeToggle.addEventListener('click', () => {
+    const cur = document.body.dataset.theme === 'dark' ? 'dark' : 'light';
+    applyTheme(cur === 'dark' ? 'light' : 'dark');
+  });
+
+  // List screen elements
+  const sceneListEl = document.getElementById('sceneList');
+  const sceneListEmpty = document.getElementById('sceneListEmpty');
+  const newSceneBtn = document.getElementById('newSceneBtn');
+  const exportBtn = document.getElementById('exportBtn');
+  const importBtn = document.getElementById('importBtn');
+  const importFileInput = document.getElementById('importFileInput');
+
+  // New scene screen elements
+  const cancelNewSceneBtn = document.getElementById('cancelNewSceneBtn');
+  const createSceneConfirmBtn = document.getElementById('createSceneConfirmBtn');
+  const newSceneNameInput = document.getElementById('newSceneNameInput');
+  const newSceneShowInput = document.getElementById('newSceneShowInput');
+  const showListEl = document.getElementById('showList');
+
+  // Editor nav
+  const backToListBtn = document.getElementById('backToListBtn');
+  const editorSceneTitle = document.getElementById('editorSceneTitle');
+  const editorSceneSubtitle = document.getElementById('editorSceneSubtitle');
+  const renameSceneBtn = document.getElementById('renameSceneBtn');
+  const deleteSceneBtn = document.getElementById('deleteSceneBtn');
+  const monologueCheckbox = document.getElementById('monologueCheckbox');
+
+  // Editor recording controls
+  const startRecBtn = document.getElementById('startRecBtn');
+  const stopRecBtn = document.getElementById('stopRecBtn');
+  const reRecordBtn = document.getElementById('reRecordBtn');
+  const myLineBtn = document.getElementById('myLineBtn');
+
+  // Playback controls
+  const modeSelect = document.getElementById('modeSelect');
+  const speedInput = document.getElementById('speedInput');
+  const speedDisplay = document.getElementById('speedDisplay');
+  const enableRatingCheckbox = document.getElementById('enableRating');
+  const playFromStartBtn = document.getElementById('playFromStartBtn');
+  const playFromLastBtn = document.getElementById('playFromLastBtn');
+  const repeatSceneBtn = document.getElementById('repeatSceneBtn');
+  const lineDrillBtn = document.getElementById('lineDrillBtn');
+  const warmupBtn = document.getElementById('warmupBtn');
+  const stopPlayBtn = document.getElementById('stopPlayBtn');
+
+  const goalMinutesInput = document.getElementById('goalMinutes');
+  const sessionStatus = document.getElementById('sessionStatus');
+
+  // Status / timeline / message
+  const recDot = document.getElementById('recDot');
+  const recStatus = document.getElementById('recStatus');
+  const playDot = document.getElementById('playDot');
+  const playStatus = document.getElementById('playStatus');
+  const audioEl = document.getElementById('audioPlayer');
+  const messageArea = document.getElementById('messageArea');
+  const timelineEl = document.getElementById('timeline');
+  const durationLabel = document.getElementById('durationLabel');
+  const linesLabel = document.getElementById('linesLabel');
+  const lineList = document.getElementById('lineList');
+  const scoreChip = document.getElementById('scoreChip');
+  const scoreChipText = document.getElementById('scoreChipText');
+  const addBookmarkBtn = document.getElementById('addBookmarkBtn');
+  const bookmarkList = document.getElementById('bookmarkList');
+
+  // Rating elements
+  const ratingPanel = document.getElementById('ratingPanel');
+  const ratingQuestion = document.getElementById('ratingQuestion');
+  const ratingProgress = document.getElementById('ratingProgress');
+  const ratingButtons = document.querySelectorAll('.rating-btn');
+  const scoreSummary = document.getElementById('scoreSummary');
+  const scoreSummaryText = document.getElementById('scoreSummaryText');
+
+  // Recording state
+  let mediaStream = null;
+  let mediaRecorder = null;
+  let recChunks = [];
+  let recStartTime = null;
+  let currentLine = null;
+  let isRecording = false;
+
+  // Playback + rating state
+  let isPlaying = false;
+  let stopPlaybackRequested = false;
+  let currentRunRatings = {};
+  let currentRunTotalLines = 0;
+  let ratingResolve = null;
+  let ratingLineIndex = null;
+
+  /* Helpers */
+
+  function setMessage(text, isError=false) {
+    messageArea.textContent = text || '';
+    messageArea.className = 'msg ' + (isError ? 'msg-error' : 'msg-info');
+  }
+
+  function saveScenes() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(scenes));
+    } catch (e) {
+      console.error(e);
+      setMessage('Could not save scenes (storage full or blocked).', true);
+    }
+  }
+
+  function loadScenes() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) scenes = parsed;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function saveSessionMeta() {
+    try {
+      const payload = {
+        sessionStart,
+        sessionAccumMs
+      };
+      localStorage.setItem(SESSION_KEY, JSON.stringify(payload));
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function loadSessionMeta() {
+    try {
+      const raw = localStorage.getItem(SESSION_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed.sessionAccumMs === 'number') {
+        sessionAccumMs = parsed.sessionAccumMs;
+        sessionStart = parsed.sessionStart || null;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function refreshShowList() {
+    const names = Array.from(new Set(scenes.map(s => s.show).filter(Boolean))).sort();
+    showListEl.innerHTML = '';
+    names.forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      showListEl.appendChild(opt);
+    });
+  }
+
+  function formatSeconds(s) {
+    if (!isFinite(s) || s < 0) return '0.0s';
+    if (s >= 60) {
+      const m = Math.floor(s / 60);
+      const r = s - m * 60;
+      return m + 'm ' + r.toFixed(1) + 's';
+    }
+    return s.toFixed(1) + 's';
+  }
+
+  function formatClock(ms) {
+    const totalSec = Math.floor(ms / 1000);
+    const m = Math.floor(totalSec / 60);
+    const s = totalSec % 60;
+    const mm = String(m).padStart(2, '0');
+    const ss = String(s).padStart(2, '0');
+    return mm + ':' + ss;
+  }
+
+  function renderSceneList() {
+    sceneListEl.innerHTML = '';
+    if (!scenes.length) {
+      sceneListEmpty.style.display = 'block';
+      return;
+    }
+    sceneListEmpty.style.display = 'none';
+
+    const sorted = scenes.slice().sort((a,b) => {
+      const sa = (a.show || '').toLowerCase();
+      const sb = (b.show || '').toLowerCase();
+      if (sa < sb) return -1;
+      if (sa > sb) return 1;
+      return b.created - a.created;
+    });
+
+    sorted.forEach(scene => {
+      const cell = document.createElement('div');
+      cell.className = 'scene-cell';
+      cell.dataset.id = scene.id;
+
+      const main = document.createElement('div');
+      main.className = 'scene-cell-main';
+
+      const name = document.createElement('div');
+      name.className = 'scene-name';
+      name.textContent = scene.name || 'Untitled scene';
+
+      const mini = document.createElement('div');
+      mini.className = 'scene-mini-meta';
+      const bits = [];
+      const durationText = scene.duration ? formatSeconds(scene.duration) : 'Unrecorded';
+      bits.push(durationText);
+      if (scene.lastScore != null) bits.push('Last: ' + scene.lastScore.toFixed(0) + '%');
+      mini.textContent = bits.join(' · ');
+
+      main.appendChild(name);
+      main.appendChild(mini);
+
+      const sub = document.createElement('div');
+      sub.className = 'scene-cell-sub';
+
+      const left = document.createElement('div');
+      const metaParts = [];
+      if (scene.show) metaParts.push(scene.show);
+      const date = new Date(scene.created || Date.now());
+      metaParts.push(date.toLocaleDateString());
+      const pc = scene.practiceCount || 0;
+      if (pc) metaParts.push(pc + ' practice' + (pc === 1 ? '' : 's'));
+      left.textContent = metaParts.join(' · ');
+
+      const right = document.createElement('div');
+      right.className = 'badge';
+      const count = scene.lines?.length || 0;
+      right.textContent = count + ' line' + (count === 1 ? '' : 's');
+
+      sub.appendChild(left);
+      sub.appendChild(right);
+
+      cell.appendChild(main);
+      cell.appendChild(sub);
+
+      cell.addEventListener('click', () => {
+        openScene(scene.id);
+      });
+
+      sceneListEl.appendChild(cell);
+    });
+  }
+
+  function getCurrentScene() {
+    return scenes.find(s => s.id === currentSceneId) || null;
+  }
+
+  function updateEditorHeader(scene) {
+    if (!scene) {
+      editorSceneTitle.textContent = 'Scene';
+      editorSceneSubtitle.textContent = '';
+      return;
+    }
+    editorSceneTitle.textContent = scene.name || 'Untitled scene';
+    const bits = [];
+    if (scene.show) bits.push(scene.show);
+    const date = new Date(scene.created || Date.now());
+    bits.push(date.toLocaleDateString());
+    if (scene.duration) bits.push(formatSeconds(scene.duration));
+    const lines = scene.lines?.length || 0;
+    bits.push(lines + ' line' + (lines === 1 ? '' : 's'));
+    if (scene.lastScore != null) bits.push('Last: ' + scene.lastScore.toFixed(0) + '%');
+    editorSceneSubtitle.textContent = bits.join(' · ');
+    monologueCheckbox.checked = !!scene.isMonologue;
+  }
+
+  function updateTimeline(scene) {
+    if (!scene || !scene.audioDataUrl) {
+      timelineEl.style.display = 'none';
+      return;
+    }
+    timelineEl.style.display = 'block';
+    durationLabel.textContent = formatSeconds(scene.duration || 0);
+    const count = scene.lines?.length || 0;
+    linesLabel.textContent = count + ' line' + (count === 1 ? '' : 's');
+
+    if (scene.lastScore != null) {
+      scoreChip.style.display = 'inline-flex';
+      scoreChipText.textContent = scene.lastScore.toFixed(0) + '%';
+    } else {
+      scoreChip.style.display = 'none';
+    }
+
+    lineList.innerHTML = '';
+    if (!count) {
+      const span = document.createElement('span');
+      span.style.color = '#8e8e93';
+      span.textContent = 'You haven’t marked any of your lines in this recording yet.';
+      lineList.appendChild(span);
+    } else {
+      scene.lines.forEach((ln, idx) => {
+        const pill = document.createElement('span');
+        pill.className = 'line-pill';
+        if (ln.note && ln.note.trim().length) pill.classList.add('line-pill-note');
+        pill.textContent = '#' + (idx+1) + ' · ' +
+          formatSeconds(ln.start) + ' – ' + formatSeconds(ln.end);
+        pill.addEventListener('click', () => editLineNote(idx));
+        lineList.appendChild(pill);
+      });
+    }
+
+    renderBookmarks(scene);
+  }
+
+  function renderBookmarks(scene) {
+    bookmarkList.innerHTML = '';
+    const list = scene.bookmarks || [];
+    if (!list.length) return;
+    list.forEach((bm, idx) => {
+      const pill = document.createElement('span');
+      pill.className = 'bookmark-pill';
+      pill.textContent = (bm.label || 'Bookmark ' + (idx+1)) + ' · ' + formatSeconds(bm.time);
+      pill.addEventListener('click', () => {
+        if (!scene.audioDataUrl) return;
+        audioEl.currentTime = bm.time;
+        audioEl.play().catch(()=>{});
+      });
+      bookmarkList.appendChild(pill);
+    });
+  }
+
+  function setRecStatus(text, live=false) {
+    recStatus.textContent = text;
+    recDot.classList.remove('live');
+    if (live) recDot.classList.add('live');
+  }
+
+  function setPlayStatus(text, playing=false) {
+    playStatus.textContent = text;
+    playDot.classList.remove('playing');
+    if (playing) playDot.classList.add('playing');
+  }
+
+  function ensureSessionTimerRunning() {
+    if (!sessionTimerId) {
+      sessionTimerId = setInterval(updateSessionStatus, 1000);
+    }
+  }
+
+  function startSessionIfNeeded() {
+    if (!sessionStart) {
+      sessionStart = Date.now();
+      saveSessionMeta();
+    }
+    ensureSessionTimerRunning();
+    updateSessionStatus();
+  }
+
+  function updateSessionStatus() {
+    let totalMs = sessionAccumMs;
+    if (sessionStart) {
+      totalMs += (Date.now() - sessionStart);
+    }
+    const goalMin = parseFloat(goalMinutesInput.value) || 0;
+    if (!goalMin) {
+      sessionStatus.textContent = 'Session time: ' + formatClock(totalMs);
+    } else {
+      const goalMs = goalMin * 60 * 1000;
+      const pct = Math.min(100, (totalMs / goalMs) * 100);
+      sessionStatus.textContent =
+        'Session: ' + formatClock(totalMs) + ' / ' + formatClock(goalMs) +
+        ' (' + pct.toFixed(0) + '% of goal)';
+    }
+  }
+
+  function endSessionIfIdle() {
+    if (!isRecording && !isPlaying && sessionStart) {
+      sessionAccumMs += Date.now() - sessionStart;
+      sessionStart = null;
+      saveSessionMeta();
+      updateSessionStatus();
+    }
+  }
+
+  /* Screen navigation */
+
+  newSceneBtn.addEventListener('click', () => {
+    newSceneNameInput.value = '';
+    newSceneShowInput.value = '';
+    createSceneConfirmBtn.classList.add('disabled');
+    showScreen('new');
+    newSceneNameInput.focus();
+  });
+
+  cancelNewSceneBtn.addEventListener('click', () => {
+    showScreen('list');
+  });
+
+  createSceneConfirmBtn.addEventListener('click', () => {
+    if (createSceneConfirmBtn.classList.contains('disabled')) return;
+    const name = newSceneNameInput.value.trim() || 'Untitled scene';
+    const show = newSceneShowInput.value.trim() || '';
+    const id = 'scene_' + Date.now() + '_' + Math.floor(Math.random()*1e6);
+    const scene = {
+      id,
+      name,
+      show,
+      created: Date.now(),
+      audioDataUrl: '',
+      duration: 0,
+      lines: [],
+      isMonologue: false,
+      practiceCount: 0
+    };
+    scenes.push(scene);
+    saveScenes();
+    refreshShowList();
+    renderSceneList();
+    openScene(id);
+  });
+
+  function updateNewSceneCreateState() {
+    const val = newSceneNameInput.value.trim();
+    if (val.length) createSceneConfirmBtn.classList.remove('disabled');
+    else createSceneConfirmBtn.classList.add('disabled');
+  }
+
+  newSceneNameInput.addEventListener('input', updateNewSceneCreateState);
+
+  backToListBtn.addEventListener('click', () => {
+    if (isRecording) {
+      if (!confirm('Stop recording and go back to the scene list?')) return;
+      stopRecording();
+    }
+    if (isPlaying) stopPlayback();
+    endSessionIfIdle();
+    showScreen('list');
+  });
+
+  function openScene(id) {
+    if (isRecording) {
+      setMessage('Stop recording before switching scenes.', true);
+      return;
+    }
+    if (isPlaying) stopPlayback();
+
+    currentSceneId = id;
+    const scene = getCurrentScene();
+    if (!scene) return;
+
+    updateEditorHeader(scene);
+    renameSceneBtn.classList.remove('disabled');
+    deleteSceneBtn.classList.remove('disabled');
+
+    if (scene.audioDataUrl) {
+      audioEl.src = scene.audioDataUrl;
+      audioEl.style.display = 'block';
+      startRecBtn.disabled = false;
+      reRecordBtn.disabled = false;
+      playFromStartBtn.disabled = false;
+      repeatSceneBtn.disabled = false;
+      lineDrillBtn.disabled = !(scene.lines && scene.lines.length);
+      warmupBtn.disabled = false;
+      playFromLastBtn.disabled = !(scene.lines && scene.lines.length);
+      myLineBtn.disabled = true;
+      updateTimeline(scene);
+    } else {
+      audioEl.removeAttribute('src');
+      audioEl.style.display = 'none';
+      startRecBtn.disabled = false;
+      reRecordBtn.disabled = true;
+      playFromStartBtn.disabled = true;
+      playFromLastBtn.disabled = true;
+      repeatSceneBtn.disabled = true;
+      lineDrillBtn.disabled = true;
+      warmupBtn.disabled = true;
+      myLineBtn.disabled = true;
+      timelineEl.style.display = 'none';
+    }
+
+    stopPlayBtn.disabled = true;
+    setRecStatus('Not recording', false);
+    setPlayStatus('Not playing', false);
+    setMessage('Record the full scene, marking your lines as you go.');
+    scoreSummary.style.display = 'none';
+    ratingPanel.style.display = 'none';
+
+    showScreen('editor');
+  }
+
+  /* Rename / delete */
+
+  renameSceneBtn.addEventListener('click', () => {
+    if (renameSceneBtn.classList.contains('disabled')) return;
+    const scene = getCurrentScene();
+    if (!scene) return;
+    const newName = prompt('Rename scene:', scene.name || 'Untitled scene');
+    if (!newName) return;
+    scene.name = newName.trim();
+    scene.created = Date.now();
+    saveScenes();
+    renderSceneList();
+    updateEditorHeader(scene);
+  });
+
+  deleteSceneBtn.addEventListener('click', () => {
+    if (deleteSceneBtn.classList.contains('disabled')) return;
+    const scene = getCurrentScene();
+    if (!scene) return;
+    if (!confirm('Delete this scene and its recording?')) return;
+    scenes = scenes.filter(s => s.id !== scene.id);
+    saveScenes();
+    refreshShowList();
+    renderSceneList();
+    currentSceneId = null;
+    audioEl.removeAttribute('src');
+    audioEl.style.display = 'none';
+    startRecBtn.disabled = true;
+    stopRecBtn.disabled = true;
+    reRecordBtn.disabled = true;
+    myLineBtn.disabled = true;
+    playFromStartBtn.disabled = true;
+    playFromLastBtn.disabled = true;
+    repeatSceneBtn.disabled = true;
+    lineDrillBtn.disabled = true;
+    warmupBtn.disabled = true;
+    stopPlayBtn.disabled = true;
+    renameSceneBtn.classList.add('disabled');
+    deleteSceneBtn.classList.add('disabled');
+    setMessage('Scene deleted. Choose another from the list.');
+    scoreSummary.style.display = 'none';
+    ratingPanel.style.display = 'none';
+    showScreen('list');
+  });
+
+  monologueCheckbox.addEventListener('change', () => {
+    const scene = getCurrentScene();
+    if (!scene) return;
+    scene.isMonologue = monologueCheckbox.checked;
+    saveScenes();
+    updateEditorHeader(scene);
+  });
+
+  /* Line notes */
+
+  function editLineNote(index) {
+    const scene = getCurrentScene();
+    if (!scene || !scene.lines || !scene.lines[index]) return;
+    const ln = scene.lines[index];
+    const current = ln.note || '';
+    const newNote = prompt('Note for this line (#' + (index+1) + '):', current);
+    if (newNote === null) return;
+    ln.note = newNote.trim();
+    saveScenes();
+    updateTimeline(scene);
+  }
+
+  /* Bookmarks */
+
+  addBookmarkBtn.addEventListener('click', () => {
+    const scene = getCurrentScene();
+    if (!scene || !scene.audioDataUrl) {
+      setMessage('You need a recording before adding bookmarks.', true);
+      return;
+    }
+    const t = audioEl.currentTime || 0;
+    const label = prompt('Bookmark label:', 'Beat ' + formatSeconds(t));
+    if (label === null) return;
+    if (!scene.bookmarks) scene.bookmarks = [];
+    scene.bookmarks.push({ time: t, label: label.trim() || ('Bookmark ' + (scene.bookmarks.length + 1)) });
+    saveScenes();
+    updateTimeline(scene);
+    setMessage('Bookmark added at ' + formatSeconds(t) + '.');
+  });
+
+  /* Recording */
+
+  async function startRecording() {
+    const scene = getCurrentScene();
+    if (!scene) {
+      setMessage('Choose or create a scene first.', true);
+      return;
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setMessage('Your browser does not support microphone recording.', true);
+      return;
+    }
+    if (isPlaying) stopPlayback();
+
+    try {
+      mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      recChunks = [];
+      recStartTime = performance.now();
+      currentLine = null;
+
+      mediaRecorder = new MediaRecorder(mediaStream);
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) recChunks.push(e.data);
+      };
+      mediaRecorder.onstop = handleRecordingStop;
+      mediaRecorder.start();
+
+      isRecording = true;
+      setRecStatus('Recording… read the whole scene.', true);
+      setMessage('Recording. Hold the yellow button while it’s your line.');
+      startRecBtn.disabled = true;
+      stopRecBtn.disabled = false;
+      reRecordBtn.disabled = true;
+      myLineBtn.disabled = false;
+      scoreSummary.style.display = 'none';
+      ratingPanel.style.display = 'none';
+      startSessionIfNeeded();
+    } catch (e) {
+      console.error(e);
+      setMessage('Could not start recording (permission denied or no mic).', true);
+    }
+  }
+
+  function stopRecording() {
+    if (!isRecording || !mediaRecorder) return;
+
+    if (currentLine) {
+      const now = (performance.now() - recStartTime) / 1000;
+      if (now > currentLine.start + 0.05) {
+        const scene = getCurrentScene();
+        if (scene) {
+          if (!scene.lines) scene.lines = [];
+          scene.lines.push({ start: currentLine.start, end: now });
+        }
+      }
+      currentLine = null;
+      myLineBtn.classList.remove('active');
+    }
+
+    isRecording = false;
+    stopRecBtn.disabled = true;
+    myLineBtn.disabled = true;
+    setRecStatus('Finishing recording…', false);
+
+    mediaRecorder.stop();
+    mediaStream.getTracks().forEach(t => t.stop());
+    mediaStream = null;
+    endSessionIfIdle();
+  }
+
+  function handleRecordingStop() {
+    const blob = new Blob(recChunks, { type: 'audio/webm' });
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const dataUrl = reader.result;
+      const scene = getCurrentScene();
+      if (!scene) return;
+
+      if (!scene.lines) scene.lines = [];
+      scene.lines = scene.lines
+        .filter(ln => ln && typeof ln.start === 'number' && typeof ln.end === 'number' && ln.end > ln.start)
+        .sort((a,b)=>a.start-b.start);
+
+      scene.audioDataUrl = dataUrl;
+      scene.created = Date.now();
+      audioEl.src = dataUrl;
+
+      audioEl.onloadedmetadata = () => {
+        scene.duration = audioEl.duration || 0;
+        saveScenes();
+        renderSceneList();
+        refreshShowList();
+        updateEditorHeader(scene);
+        updateTimeline(scene);
+        setRecStatus('Not recording', false);
+        setMessage('Recording saved. Use the practice modes to run the scene.');
+        startRecBtn.disabled = false;
+        reRecordBtn.disabled = false;
+        playFromStartBtn.disabled = false;
+        repeatSceneBtn.disabled = false;
+        lineDrillBtn.disabled = !(scene.lines && scene.lines.length);
+        warmupBtn.disabled = false;
+        playFromLastBtn.disabled = !(scene.lines && scene.lines.length);
+        myLineBtn.disabled = true;
+        audioEl.style.display = 'block';
+        scoreSummary.style.display = 'none';
+      };
+    };
+    reader.readAsDataURL(blob);
+  }
+
+  function handleLineHoldStart() {
+    if (!isRecording || !mediaRecorder || mediaRecorder.state !== 'recording') return;
+    if (currentLine) return;
+    const t = (performance.now() - recStartTime) / 1000;
+    currentLine = { start: t };
+    myLineBtn.classList.add('active');
+  }
+
+  function handleLineHoldEnd() {
+    if (!isRecording || !currentLine) return;
+    const t = (performance.now() - recStartTime) / 1000;
+    if (t > currentLine.start + 0.05) {
+      const scene = getCurrentScene();
+      if (scene) {
+        if (!scene.lines) scene.lines = [];
+        scene.lines.push({ start: currentLine.start, end: t });
+      }
+    }
+    currentLine = null;
+    myLineBtn.classList.remove('active');
+  }
+
+  // My-line button (mouse + touch)
+  myLineBtn.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    handleLineHoldStart();
+  });
+  myLineBtn.addEventListener('mouseup', (e) => {
+    e.preventDefault();
+    handleLineHoldEnd();
+  });
+  myLineBtn.addEventListener('mouseleave', (e) => {
+    if (e.buttons === 0) return;
+    handleLineHoldEnd();
+  });
+  myLineBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    handleLineHoldStart();
+  }, { passive: false });
+  myLineBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    handleLineHoldEnd();
+  }, { passive: false });
+  myLineBtn.addEventListener('touchcancel', (e) => {
+    e.preventDefault();
+    handleLineHoldEnd();
+  }, { passive: false });
+
+  startRecBtn.addEventListener('click', startRecording);
+  stopRecBtn.addEventListener('click', stopRecording);
+  reRecordBtn.addEventListener('click', () => {
+    const scene = getCurrentScene();
+    if (!scene) return;
+    if (!confirm('Re-record this scene? Existing audio and lines will be replaced.')) return;
+    scene.audioDataUrl = '';
+    scene.duration = 0;
+    scene.lines = [];
+    scene.bookmarks = [];
+    saveScenes();
+    updateTimeline(scene);
+    audioEl.removeAttribute('src');
+    audioEl.style.display = 'none';
+    playFromStartBtn.disabled = true;
+    playFromLastBtn.disabled = true;
+    repeatSceneBtn.disabled = true;
+    lineDrillBtn.disabled = true;
+    warmupBtn.disabled = true;
+    scoreSummary.style.display = 'none';
+    ratingPanel.style.display = 'none';
+    startRecording();
+  });
+
+  /* Playback + rating */
+
+  function validateSpeed() {
+    let v = parseFloat(speedInput.value);
+    if (!isFinite(v)) v = 1.0;
+    if (v < 0.5) v = 0.5;
+    if (v > 2.0) v = 2.0;
+    speedInput.value = v.toFixed(2);
+    speedDisplay.textContent = v.toFixed(2) + '×';
+    return v;
+  }
+
+  speedInput.addEventListener('change', validateSpeed);
+  speedInput.addEventListener('blur', validateSpeed);
+
+  function showScoreSummary(finalScore) {
+    const ratedIndices = Object.keys(currentRunRatings);
+    const ratedCount = ratedIndices.length;
+    const totalLines = currentRunTotalLines || 0;
+    if (!totalLines || !ratedCount) {
+      scoreSummary.style.display = 'none';
+      return;
+    }
+
+    let correct = 0, partial = 0, wrong = 0;
+    ratedIndices.forEach(k => {
+      const r = currentRunRatings[k];
+      if (r === 'right') correct++;
+      else if (r === 'somewhat') partial++;
+      else if (r === 'wrong') wrong++;
+    });
+
+    const score = finalScore != null ? finalScore :
+      (correct + 0.5 * partial) / ratedCount * 100;
+
+    scoreSummary.style.display = 'block';
+    scoreSummaryText.innerHTML =
+      'You rated <strong>' + ratedCount + '</strong> line' + (ratedCount === 1 ? '' : 's') +
+      ' (out of ' + totalLines + ').<br>' +
+      'Correct: <strong>' + correct + '</strong>, ' +
+      'Somewhat: <strong>' + partial + '</strong>, ' +
+      'Wrong: <strong>' + wrong + '</strong>.<br>' +
+      'Estimated knowledge: <strong>' + score.toFixed(0) + '%</strong>.';
+
+    const scene = getCurrentScene();
+    if (scene) {
+      scene.lastScore = score;
+      scene.lastPracticed = Date.now();
+      scene.practiceCount = (scene.practiceCount || 0) + 1;
+      saveScenes();
+      renderSceneList();
+      updateEditorHeader(scene);
+      updateTimeline(scene);
+    }
+  }
+
+  function stopPlayback() {
+    stopPlaybackRequested = true;
+    if (ratingResolve) {
+      const r = ratingResolve;
+      ratingResolve = null;
+      r(false);
+    }
+    ratingPanel.style.display = 'none';
+    if (audioEl) audioEl.pause();
+    isPlaying = false;
+    stopPlayBtn.disabled = true;
+    setPlayStatus('Not playing', false);
+
+    if (currentRunTotalLines && Object.keys(currentRunRatings).length) {
+      showScoreSummary();
+    } else {
+      scoreSummary.style.display = 'none';
+    }
+
+    endSessionIfIdle();
+  }
+
+  function waitWithCancel(ms) {
+    return new Promise(resolve => {
+      const start = performance.now();
+      function step(now) {
+        if (stopPlaybackRequested) {
+          resolve(false);
+          return;
+        }
+        if (now - start >= ms) {
+          resolve(true);
+          return;
+        }
+        requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  }
+
+  function playSection(start, end, speed) {
+    return new Promise((resolve, reject) => {
+      if (stopPlaybackRequested) {
+        resolve(false); return;
+      }
+      audioEl.currentTime = start;
+      audioEl.playbackRate = speed;
+
+      let done = false;
+      function cleanup() {
+        if (done) return;
+        done = true;
+        audioEl.removeEventListener('timeupdate', onTimeUpdate);
+        audioEl.removeEventListener('ended', onEnded);
+      }
+
+      function onTimeUpdate() {
+        if (stopPlaybackRequested) {
+          cleanup();
+          audioEl.pause();
+          resolve(false);
+          return;
+        }
+        if (audioEl.currentTime >= end) {
+          cleanup();
+          audioEl.pause();
+          resolve(true);
+        }
+      }
+      function onEnded() {
+        cleanup();
+        resolve(false);
+      }
+
+      audioEl.addEventListener('timeupdate', onTimeUpdate);
+      audioEl.addEventListener('ended', onEnded);
+
+      audioEl.play().catch(err => {
+        cleanup();
+        console.error(err);
+        setMessage('Could not start playback.', true);
+        reject(err);
+      });
+    });
+  }
+
+  function askForRating(lineIndex, totalLines) {
+    return new Promise(resolve => {
+      if (stopPlaybackRequested) {
+        resolve(false);
+        return;
+      }
+      ratingLineIndex = lineIndex;
+      ratingResolve = resolve;
+      ratingPanel.style.display = 'block';
+      ratingQuestion.textContent = 'Line #' + (lineIndex + 1) + ' – how did you do?';
+      const ratedSoFar = Object.keys(currentRunRatings).length;
+      ratingProgress.textContent = 'Rated ' + ratedSoFar + ' of ' + totalLines + ' lines.';
+    });
+  }
+
+  ratingButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!ratingResolve || ratingLineIndex == null) return;
+      const rating = btn.dataset.rating;
+      currentRunRatings[String(ratingLineIndex)] = rating;
+      const resolver = ratingResolve;
+      ratingResolve = null;
+      ratingLineIndex = null;
+      ratingProgress.textContent = 'Marked as ' + rating + '.';
+      setTimeout(() => {
+        ratingPanel.style.display = 'none';
+        resolver(true);
+      }, 130);
+    });
+  });
+
+  async function playScene(fromLastLine=false) {
+    const scene = getCurrentScene();
+    if (!scene || !scene.audioDataUrl) {
+      setMessage('No recording for this scene yet.', true);
+      return;
+    }
+    if (isRecording) {
+      setMessage('Stop recording before playback.', true);
+      return;
+    }
+
+    const mode = parseInt(modeSelect.value, 10) || 1;
+    const speed = validateSpeed();
+    const ratingEnabled = enableRatingCheckbox.checked;
+    const isMono = !!scene.isMonologue;
+
+    const duration = scene.duration || audioEl.duration || 0;
+    if (!isFinite(duration) || duration <= 0) {
+      setMessage('Could not determine audio duration.', true);
+      return;
+    }
+
+    const lines = (scene.lines || [])
+      .filter(ln => ln && typeof ln.start === 'number' && typeof ln.end === 'number' && ln.end > ln.start)
+      .sort((a,b)=>a.start-b.start);
+
+    stopPlaybackRequested = false;
+    isPlaying = true;
+    stopPlayBtn.disabled = false;
+    setPlayStatus('Playing (mode ' + mode + ')', true);
+    setMessage('Playing scene…');
+    ratingPanel.style.display = 'none';
+    startSessionIfNeeded();
+
+    if (ratingEnabled && !isMono && mode !== 1 && lines.length) {
+      scoreSummary.style.display = 'none';
+      currentRunRatings = {};
+      currentRunTotalLines = lines.length;
+    } else {
+      scoreSummary.style.display = 'none';
+      currentRunRatings = {};
+      currentRunTotalLines = 0;
+    }
+
+    let startTime = 0;
+    if (fromLastLine && lines.length) {
+      startTime = lines[lines.length - 1].start;
+    }
+
+    // Monologue: just play full scene regardless of mode, no scoring logic
+    if (isMono || mode === 1 || !lines.length) {
+      try {
+        await playSection(startTime, duration, speed);
+      } catch (_) {}
+      stopPlayback();
+      return;
+    }
+
+    const factor = (mode === 2) ? 1.5 : (mode === 3 ? 1.0 : 1.0);
+    const cueOnly = (mode === 4);
+    const relevantLines = lines.filter(ln => ln.end > startTime);
+    let t = startTime;
+
+    if (!ratingEnabled || cueOnly) {
+      // Pauses / cue-only but no scoring
+      for (const ln of relevantLines) {
+        if (stopPlaybackRequested) break;
+
+        const lineStart = Math.max(0, ln.start);
+        const lineEnd = Math.min(duration, ln.end);
+        const L = Math.max(0, lineEnd - lineStart);
+        if (L <= 0.02) continue;
+
+        if (lineStart > t + 0.01) {
+          const ok = await playSection(t, lineStart, speed);
+          if (!ok || stopPlaybackRequested) break;
+          t = lineStart;
+        }
+
+        const pauseMs = factor * L * (1000 / speed);
+        setPlayStatus('Pause before your line…', true);
+        const okPause = await waitWithCancel(pauseMs);
+        if (!okPause || stopPlaybackRequested) break;
+
+        if (!cueOnly) {
+          setPlayStatus('Your line!', true);
+          const okLine = await playSection(lineStart, lineEnd, speed);
+          if (!okLine || stopPlaybackRequested) break;
+          t = lineEnd;
+        } else {
+          // skip over your line silently
+          t = lineEnd;
+        }
+
+        setPlayStatus('Playing scene…', true);
+      }
+
+      if (!stopPlaybackRequested && t < duration - 0.02) {
+        await playSection(t, duration, speed);
+      }
+      stopPlayback();
+      return;
+    }
+
+    // With scoring enabled (modes 2/3 only)
+    for (const ln of relevantLines) {
+      if (stopPlaybackRequested) break;
+
+      const lineStart = Math.max(0, ln.start);
+      const lineEnd = Math.min(duration, ln.end);
+      const L = Math.max(0, lineEnd - lineStart);
+      if (L <= 0.02) continue;
+
+      const lineIndex = lines.indexOf(ln);
+
+      if (lineStart > t + 0.01) {
+        const ok = await playSection(t, lineStart, speed);
+        if (!ok || stopPlaybackRequested) break;
+        t = lineStart;
+      }
+
+      const pauseMs = factor * L * (1000 / speed);
+      setPlayStatus('Pause before your line…', true);
+      const okPause = await waitWithCancel(pauseMs);
+      if (!okPause || stopPlaybackRequested) break;
+
+      setPlayStatus('Your line!', true);
+      const okLine = await playSection(lineStart, lineEnd, speed);
+      if (!okLine || stopPlaybackRequested) break;
+      t = lineEnd;
+
+      const okRating = await askForRating(lineIndex, lines.length);
+      if (!okRating || stopPlaybackRequested) break;
+
+      setPlayStatus('Playing scene…', true);
+    }
+
+    if (!stopPlaybackRequested && t < duration - 0.02) {
+      await playSection(t, duration, speed);
+    }
+
+    stopPlayback();
+  }
+
+  async function repeatScene() {
+    const scene = getCurrentScene();
+    if (!scene || !scene.audioDataUrl) {
+      setMessage('No recording for this scene yet.', true);
+      return;
+    }
+    if (isRecording) {
+      setMessage('Stop recording before playback.', true);
+      return;
+    }
+
+    const speed = validateSpeed();
+    const duration = scene.duration || audioEl.duration || 0;
+    if (!isFinite(duration) || duration <= 0) {
+      setMessage('Could not determine audio duration.', true);
+      return;
+    }
+
+    stopPlaybackRequested = false;
+    isPlaying = true;
+    stopPlayBtn.disabled = false;
+    setPlayStatus('Repeating full scene', true);
+    setMessage('Repeating full scene (mode 1) until you tap Stop.');
+    ratingPanel.style.display = 'none';
+    scoreSummary.style.display = 'none';
+    currentRunRatings = {};
+    currentRunTotalLines = 0;
+    startSessionIfNeeded();
+
+    while (!stopPlaybackRequested) {
+      try {
+        const ok = await playSection(0, duration, speed);
+        if (!ok || stopPlaybackRequested) break;
+      } catch (_) {
+        break;
+      }
+    }
+
+    stopPlayback();
+  }
+
+  async function lineDrill() {
+    const scene = getCurrentScene();
+    if (!scene || !scene.audioDataUrl) {
+      setMessage('No recording for this scene yet.', true);
+      return;
+    }
+    if (isRecording) {
+      setMessage('Stop recording before playback.', true);
+      return;
+    }
+    const duration = scene.duration || audioEl.duration || 0;
+    const speed = validateSpeed();
+    if (!isFinite(duration) || duration <= 0) {
+      setMessage('Could not determine audio duration.', true);
+      return;
+    }
+
+    const lines = (scene.lines || [])
+      .filter(ln => ln && typeof ln.start === 'number' && typeof ln.end === 'number' && ln.end > ln.start)
+      .sort((a,b)=>a.start-b.start);
+
+    if (!lines.length) {
+      setMessage('No marked lines to drill.', true);
+      return;
+    }
+
+    stopPlaybackRequested = false;
+    isPlaying = true;
+    stopPlayBtn.disabled = false;
+    setPlayStatus('Line drill', true);
+    setMessage('Drilling your lines with a bit of context before each.');
+    ratingPanel.style.display = 'none';
+    scoreSummary.style.display = 'none';
+    currentRunRatings = {};
+    currentRunTotalLines = 0;
+    startSessionIfNeeded();
+
+    for (const ln of lines) {
+      if (stopPlaybackRequested) break;
+      const contextStart = Math.max(0, ln.start - CONTEXT_SECONDS);
+      const end = Math.min(duration, ln.end);
+      const ok = await playSection(contextStart, end, speed);
+      if (!ok || stopPlaybackRequested) break;
+      await waitWithCancel(250 / speed); // small gap between lines
+    }
+
+    stopPlayback();
+  }
+
+  async function warmupScene() {
+    const scene = getCurrentScene();
+    if (!scene || !scene.audioDataUrl) {
+      setMessage('No recording for this scene yet.', true);
+      return;
+    }
+    if (isRecording) {
+      setMessage('Stop recording before playback.', true);
+      return;
+    }
+
+    const duration = scene.duration || audioEl.duration || 0;
+    if (!isFinite(duration) || duration <= 0) {
+      setMessage('Could not determine audio duration.', true);
+      return;
+    }
+
+    const baseSpeed = validateSpeed();
+    const speeds = [Math.max(0.6, baseSpeed * 0.8), baseSpeed, Math.min(2.0, baseSpeed * 1.2)];
+
+    stopPlaybackRequested = false;
+    isPlaying = true;
+    stopPlayBtn.disabled = false;
+    setPlayStatus('Warm-up run', true);
+    setMessage('Warm-up: slow → normal → faster.');
+    ratingPanel.style.display = 'none';
+    scoreSummary.style.display = 'none';
+    currentRunRatings = {};
+    currentRunTotalLines = 0;
+    startSessionIfNeeded();
+
+    for (const sp of speeds) {
+      if (stopPlaybackRequested) break;
+      try {
+        await playSection(0, duration, sp);
+      } catch (_) {
+        break;
+      }
+      if (stopPlaybackRequested) break;
+    }
+
+    stopPlayback();
+  }
+
+  playFromStartBtn.addEventListener('click', () => playScene(false));
+  playFromLastBtn.addEventListener('click', () => playScene(true));
+  repeatSceneBtn.addEventListener('click', () => repeatScene());
+  lineDrillBtn.addEventListener('click', () => lineDrill());
+  warmupBtn.addEventListener('click', () => warmupScene());
+  stopPlayBtn.addEventListener('click', () => stopPlayback());
+
+  /* Export / Import */
+
+  exportBtn.addEventListener('click', () => {
+    const data = {
+      version: 1,
+      scenes
+    };
+    const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const stamp = new Date().toISOString().slice(0,10);
+    a.download = 'line_learner_backup_' + stamp + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setMessage('Exported all shows and scenes as a JSON file.');
+  });
+
+  importBtn.addEventListener('click', () => {
+    importFileInput.click();
+  });
+
+  importFileInput.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result);
+        if (parsed && Array.isArray(parsed.scenes)) {
+          if (!confirm('Import will merge scenes with your existing ones. Continue?')) return;
+          scenes = scenes.concat(parsed.scenes);
+          saveScenes();
+          refreshShowList();
+          renderSceneList();
+          setMessage('Import complete. Your new scenes are in the list.');
+          showScreen('list');
+        } else {
+          setMessage('Import file did not look like a Line Learner backup.', true);
+        }
+      } catch (err) {
+        console.error(err);
+        setMessage('Could not read import file.', true);
+      }
+    };
+    reader.readAsText(file);
+    importFileInput.value = '';
+  });
+
+  /* Init */
+
+  loadScenes();
+  loadSessionMeta();
+  refreshShowList();
+  renderSceneList();
+  validateSpeed();
+  setRecStatus('Not recording', false);
+  setPlayStatus('Not playing', false);
+  setMessage('Choose or create a scene to get started.');
+  scoreSummary.style.display = 'none';
+  ratingPanel.style.display = 'none';
+  updateSessionStatus();
+  ensureSessionTimerRunning();
+
+  // Disable editor until a scene is selected
+  startRecBtn.disabled = true;
+  stopRecBtn.disabled = true;
+  reRecordBtn.disabled = true;
+  myLineBtn.disabled = true;
+  playFromStartBtn.disabled = true;
+  playFromLastBtn.disabled = true;
+  repeatSceneBtn.disabled = true;
+  lineDrillBtn.disabled = true;
+  warmupBtn.disabled = true;
+  stopPlayBtn.disabled = true;
+})();
+</script>
+</body>
+</html>
