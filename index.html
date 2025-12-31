@@ -63,6 +63,8 @@
       position: relative;
     }
 
+    /* Screens */
+
     .screen {
       display: none;
       flex: 1;
@@ -72,6 +74,8 @@
       display: flex;
       flex-direction: column;
     }
+
+    /* Nav */
 
     .nav {
       position: sticky;
@@ -127,6 +131,8 @@
       pointer-events: none;
     }
 
+    /* Theme toggle */
+
     .theme-toggle {
       position: fixed;
       right: 14px;
@@ -149,6 +155,8 @@
       border-color: rgba(148,163,184,0.4);
       box-shadow: 0 8px 20px rgba(0,0,0,0.7);
     }
+
+    /* Scene list */
 
     .list-container {
       margin-top: 10px;
@@ -260,6 +268,8 @@
       text-align: center;
     }
 
+    /* Cards / Sheets */
+
     .sheet {
       margin-top: 12px;
       border-radius: var(--radius-xl);
@@ -301,6 +311,8 @@
       font-size: 12px;
       color: var(--muted);
     }
+
+    /* Editor layout */
 
     .editor-wrapper {
       margin-top: 10px;
@@ -638,6 +650,8 @@
       color: var(--danger);
     }
 
+    /* Rating */
+
     .rating-panel {
       margin-top: 10px;
       border-radius: 12px;
@@ -705,7 +719,6 @@
       display: none;
       font-size: 13px;
     }
-
     #scoreSummary strong {
       font-weight: 600;
     }
@@ -928,6 +941,7 @@
           </div>
         </div>
 
+        <!-- Rating -->
         <div id="ratingPanel" class="rating-panel">
           <div id="ratingQuestion" class="rating-question">Did you get your line right?</div>
           <div class="rating-buttons">
@@ -950,18 +964,19 @@
     </div>
   </div>
 
+  <!-- Theme toggle -->
   <div id="themeToggle" class="theme-toggle">☾</div>
 
 </div>
 
 <script>
 (function() {
-  const STORAGE_KEY = 'lineLearnerScenes_v6';
+  const STORAGE_KEY = 'lineLearnerScenes_v6'; // keep same key so old data still works
   const THEME_KEY = 'lineLearnerTheme';
   const SESSION_KEY = 'lineLearnerSession';
-  const CONTEXT_SECONDS = 0.8;
+  const CONTEXT_SECONDS = 0.8; // context in line drill
 
-  // Capability check (important especially on iOS)
+  // Capability check (esp. for iOS)
   const canRecord = !!(
     navigator.mediaDevices &&
     navigator.mediaDevices.getUserMedia &&
@@ -1014,7 +1029,8 @@
     if (saved === 'dark' || saved === 'light') {
       applyTheme(saved);
     } else {
-      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const prefersDark = window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches;
       applyTheme(prefersDark ? 'dark' : 'light');
     }
   })();
@@ -1108,6 +1124,8 @@
   let ratingResolve = null;
   let ratingLineIndex = null;
 
+  /* Helpers */
+
   function setMessage(text, isError=false) {
     messageArea.textContent = text || '';
     messageArea.className = 'msg ' + (isError ? 'msg-error' : 'msg-info');
@@ -1157,7 +1175,9 @@
   }
 
   function refreshShowList() {
-    const names = Array.from(new Set(scenes.map(s => s.show).filter(Boolean))).sort();
+    const names = Array.from(new Set(
+      scenes.map(s => s.show).filter(Boolean)
+    )).sort();
     showListEl.innerHTML = '';
     names.forEach(name => {
       const opt = document.createElement('option');
@@ -1356,9 +1376,7 @@
 
   function updateSessionStatus() {
     let totalMs = sessionAccumMs;
-    if (sessionStart) {
-      totalMs += (Date.now() - sessionStart);
-    }
+    if (sessionStart) totalMs += (Date.now() - sessionStart);
     const goalMin = parseFloat(goalMinutesInput.value) || 0;
     if (!goalMin) {
       sessionStatus.textContent = 'Session time: ' + formatClock(totalMs);
@@ -1380,7 +1398,8 @@
     }
   }
 
-  // Navigation
+  /* Navigation */
+
   newSceneBtn.addEventListener('click', () => {
     newSceneNameInput.value = '';
     newSceneShowInput.value = '';
@@ -1434,7 +1453,6 @@
   function setupAudioForScene(scene) {
     if (!scene.audioDataUrl) return;
     audioEl.style.display = 'block';
-    // disable practice buttons until metadata is ready
     playFromStartBtn.disabled = true;
     playFromLastBtn.disabled = true;
     repeatSceneBtn.disabled = true;
@@ -1515,7 +1533,8 @@
     showScreen('editor');
   }
 
-  // Rename / delete
+  /* Rename / delete */
+
   renameSceneBtn.addEventListener('click', () => {
     if (renameSceneBtn.classList.contains('disabled')) return;
     const scene = getCurrentScene();
@@ -1568,7 +1587,8 @@
     updateEditorHeader(scene);
   });
 
-  // Line notes
+  /* Line notes */
+
   function editLineNote(index) {
     const scene = getCurrentScene();
     if (!scene || !scene.lines || !scene.lines[index]) return;
@@ -1581,7 +1601,8 @@
     updateTimeline(scene);
   }
 
-  // Bookmarks
+  /* Bookmarks */
+
   addBookmarkBtn.addEventListener('click', () => {
     const scene = getCurrentScene();
     if (!scene || !scene.audioDataUrl) {
@@ -1592,13 +1613,17 @@
     const label = prompt('Bookmark label:', 'Beat ' + formatSeconds(t));
     if (label === null) return;
     if (!scene.bookmarks) scene.bookmarks = [];
-    scene.bookmarks.push({ time: t, label: label.trim() || ('Bookmark ' + (scene.bookmarks.length + 1)) });
+    scene.bookmarks.push({
+      time: t,
+      label: label.trim() || ('Bookmark ' + (scene.bookmarks.length + 1))
+    });
     saveScenes();
     updateTimeline(scene);
     setMessage('Bookmark added at ' + formatSeconds(t) + '.');
   });
 
-  // Recording
+  /* Recording */
+
   async function startRecording() {
     const scene = getCurrentScene();
     if (!scene) {
@@ -1618,7 +1643,8 @@
       currentLine = null;
 
       const options = {};
-      if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/webm')) {
+      if (MediaRecorder.isTypeSupported &&
+          MediaRecorder.isTypeSupported('audio/webm')) {
         options.mimeType = 'audio/webm';
       }
       mediaRecorder = new MediaRecorder(mediaStream, options);
@@ -1689,7 +1715,7 @@
     const blob = new Blob(recChunks, { type: 'audio/webm' });
     recChunks = [];
 
-    // First: load via blob URL to get a reliable duration
+    // Step 1: use blob URL to get reliable duration (mobile-friendly)
     const blobUrl = URL.createObjectURL(blob);
     audioEl.onloadedmetadata = null;
     audioEl.onerror = null;
@@ -1698,10 +1724,11 @@
 
     function finalizeWithDuration(duration) {
       scene.duration = duration;
-      // Now store as data URL in localStorage
+
+      // Step 2: convert to data URL for persistence, but keep blobUrl
       const reader = new FileReader();
       reader.onloadend = () => {
-        scene.audioDataUrl = reader.result;
+        scene.audioDataUrl = reader.result; // for future loads
         saveScenes();
         renderSceneList();
         refreshShowList();
@@ -1719,9 +1746,9 @@
         myLineBtn.disabled = true;
         scoreSummary.style.display = 'none';
 
-        // Switch the audio element to use the stored data URL
-        audioEl.src = scene.audioDataUrl;
-        URL.revokeObjectURL(blobUrl);
+        // IMPORTANT: do NOT change audioEl.src here.
+        // Let it keep using blobUrl for this session.
+        // Next time you open the scene, it will use scene.audioDataUrl.
       };
       reader.readAsDataURL(blob);
     }
@@ -1730,7 +1757,7 @@
       let dur = audioEl.duration;
 
       if (dur === Infinity) {
-        // Safari sometimes reports Infinity: seek to a big time to force duration
+        // Safari sometimes reports Infinity: seek far to force duration
         audioEl.currentTime = 1e7;
         audioEl.ontimeupdate = () => {
           audioEl.ontimeupdate = null;
@@ -1747,7 +1774,6 @@
 
     audioEl.onerror = () => {
       console.error('Error reading audio metadata from recording');
-      // Still save the blob as data URL, but duration may be 0
       finalizeWithDuration(0);
     };
 
@@ -1832,7 +1858,8 @@
     startRecording();
   });
 
-  // Playback + rating
+  /* Playback + rating */
+
   function validateSpeed() {
     let v = parseFloat(speedInput.value);
     if (!isFinite(v)) v = 1.0;
@@ -2051,7 +2078,7 @@
       startTime = lines[lines.length - 1].start;
     }
 
-    // Monologue or mode 1 or no lines: just play straight through
+    // Monologue / full-scene / no lines: just play through
     if (isMono || mode === 1 || !lines.length) {
       try { await playSection(startTime, duration, speed); } catch (_) {}
       stopPlayback();
@@ -2073,13 +2100,14 @@
         const L = Math.max(0, lineEnd - lineStart);
         if (L <= 0.02) continue;
 
+        // Play up to your line (previous lines as context)
         if (lineStart > t + 0.01) {
           const ok = await playSection(t, lineStart, speed);
           if (!ok || stopPlaybackRequested) break;
           t = lineStart;
         }
 
-        // pause before your line
+        // Pause before your line
         const pauseMs = factor * L * (1000 / speed);
         setPlayStatus('Pause before your line…', true);
         const okPause = await waitWithCancel(pauseMs);
@@ -2116,6 +2144,7 @@
       const lineIndex = lines.indexOf(ln);
 
       if (lineStart > t + 0.01) {
+        // Play lead-up before your line (context)
         const ok = await playSection(t, lineStart, speed);
         if (!ok || stopPlaybackRequested) break;
         t = lineStart;
@@ -2252,7 +2281,11 @@
     }
 
     const baseSpeed = validateSpeed();
-    const speeds = [Math.max(0.6, baseSpeed * 0.8), baseSpeed, Math.min(2.0, baseSpeed * 1.2)];
+    const speeds = [
+      Math.max(0.6, baseSpeed * 0.8),
+      baseSpeed,
+      Math.min(2.0, baseSpeed * 1.2)
+    ];
 
     stopPlaybackRequested = false;
     isPlaying = true;
@@ -2285,7 +2318,8 @@
   warmupBtn.addEventListener('click', () => warmupScene());
   stopPlayBtn.addEventListener('click', () => stopPlayback());
 
-  // Export / import
+  /* Export / import */
+
   exportBtn.addEventListener('click', () => {
     const data = { version: 1, scenes };
     const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
@@ -2330,7 +2364,8 @@
     importFileInput.value = '';
   });
 
-  // Init
+  /* Init */
+
   loadScenes();
   loadSessionMeta();
   refreshShowList();
