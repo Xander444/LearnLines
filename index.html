@@ -63,8 +63,6 @@
       position: relative;
     }
 
-    /* Screens */
-
     .screen {
       display: none;
       flex: 1;
@@ -74,8 +72,6 @@
       display: flex;
       flex-direction: column;
     }
-
-    /* Nav bar */
 
     .nav {
       position: sticky;
@@ -131,8 +127,6 @@
       pointer-events: none;
     }
 
-    /* Theme toggle */
-
     .theme-toggle {
       position: fixed;
       right: 14px;
@@ -155,8 +149,6 @@
       border-color: rgba(148,163,184,0.4);
       box-shadow: 0 8px 20px rgba(0,0,0,0.7);
     }
-
-    /* Scene list */
 
     .list-container {
       margin-top: 10px;
@@ -268,8 +260,6 @@
       text-align: center;
     }
 
-    /* Cards / sheets */
-
     .sheet {
       margin-top: 12px;
       border-radius: var(--radius-xl);
@@ -311,8 +301,6 @@
       font-size: 12px;
       color: var(--muted);
     }
-
-    /* Editor */
 
     .editor-wrapper {
       margin-top: 10px;
@@ -547,6 +535,7 @@
       background: #fafafc;
       padding: 9px 11px 10px;
       font-size: 12px;
+      display: none;
     }
     body[data-theme="dark"] .timeline {
       background: #020617;
@@ -649,8 +638,6 @@
       color: var(--danger);
     }
 
-    /* Self-rating panel */
-
     .rating-panel {
       margin-top: 10px;
       border-radius: 12px;
@@ -714,8 +701,6 @@
       color: var(--muted);
     }
 
-    /* Score summary */
-
     #scoreSummary {
       display: none;
       font-size: 13px;
@@ -725,7 +710,6 @@
       font-weight: 600;
     }
 
-    /* Session goal */
     .session-status {
       font-size: 12px;
       color: var(--muted);
@@ -917,7 +901,7 @@
           </button>
         </div>
 
-        <div id="timeline" class="timeline" style="display:none;">
+        <div id="timeline" class="timeline">
           <div class="timeline-header">
             <span>Scene summary</span>
             <div class="timeline-chips">
@@ -944,7 +928,6 @@
           </div>
         </div>
 
-        <!-- Self-rating panel -->
         <div id="ratingPanel" class="rating-panel">
           <div id="ratingQuestion" class="rating-question">Did you get your line right?</div>
           <div class="rating-buttons">
@@ -955,7 +938,6 @@
           <div id="ratingProgress" class="rating-progress"></div>
         </div>
 
-        <!-- Score summary -->
         <div id="scoreSummary" class="sheet small">
           <div id="scoreSummaryText"></div>
         </div>
@@ -968,17 +950,23 @@
     </div>
   </div>
 
-  <!-- Theme toggle -->
   <div id="themeToggle" class="theme-toggle">☾</div>
 
 </div>
 
 <script>
 (function() {
-  const STORAGE_KEY = 'lineLearnerScenes_v5';
+  const STORAGE_KEY = 'lineLearnerScenes_v6';
   const THEME_KEY = 'lineLearnerTheme';
   const SESSION_KEY = 'lineLearnerSession';
-  const CONTEXT_SECONDS = 0.8; // context before your line in line-drill mode
+  const CONTEXT_SECONDS = 0.8;
+
+  // Capability check (important especially on iOS)
+  const canRecord = !!(
+    navigator.mediaDevices &&
+    navigator.mediaDevices.getUserMedia &&
+    typeof MediaRecorder !== 'undefined'
+  );
 
   /* Scene shape:
      {
@@ -1012,7 +1000,7 @@
     if (id === 'editor') screenEditor.classList.add('active');
   }
 
-  // Theme handling
+  // Theme
   const themeToggle = document.getElementById('themeToggle');
 
   function applyTheme(theme) {
@@ -1044,7 +1032,7 @@
   const importBtn = document.getElementById('importBtn');
   const importFileInput = document.getElementById('importFileInput');
 
-  // New scene screen elements
+  // New scene
   const cancelNewSceneBtn = document.getElementById('cancelNewSceneBtn');
   const createSceneConfirmBtn = document.getElementById('createSceneConfirmBtn');
   const newSceneNameInput = document.getElementById('newSceneNameInput');
@@ -1059,7 +1047,7 @@
   const deleteSceneBtn = document.getElementById('deleteSceneBtn');
   const monologueCheckbox = document.getElementById('monologueCheckbox');
 
-  // Editor recording controls
+  // Recording controls
   const startRecBtn = document.getElementById('startRecBtn');
   const stopRecBtn = document.getElementById('stopRecBtn');
   const reRecordBtn = document.getElementById('reRecordBtn');
@@ -1080,7 +1068,7 @@
   const goalMinutesInput = document.getElementById('goalMinutes');
   const sessionStatus = document.getElementById('sessionStatus');
 
-  // Status / timeline / message
+  // Status / timeline
   const recDot = document.getElementById('recDot');
   const recStatus = document.getElementById('recStatus');
   const playDot = document.getElementById('playDot');
@@ -1096,7 +1084,7 @@
   const addBookmarkBtn = document.getElementById('addBookmarkBtn');
   const bookmarkList = document.getElementById('bookmarkList');
 
-  // Rating elements
+  // Rating
   const ratingPanel = document.getElementById('ratingPanel');
   const ratingQuestion = document.getElementById('ratingQuestion');
   const ratingProgress = document.getElementById('ratingProgress');
@@ -1112,15 +1100,13 @@
   let currentLine = null;
   let isRecording = false;
 
-  // Playback + rating state
+  // Playback / rating state
   let isPlaying = false;
   let stopPlaybackRequested = false;
   let currentRunRatings = {};
   let currentRunTotalLines = 0;
   let ratingResolve = null;
   let ratingLineIndex = null;
-
-  /* Helpers */
 
   function setMessage(text, isError=false) {
     messageArea.textContent = text || '';
@@ -1149,10 +1135,7 @@
 
   function saveSessionMeta() {
     try {
-      const payload = {
-        sessionStart,
-        sessionAccumMs
-      };
+      const payload = { sessionStart, sessionAccumMs };
       localStorage.setItem(SESSION_KEY, JSON.stringify(payload));
     } catch (e) {
       console.error(e);
@@ -1197,9 +1180,7 @@
     const totalSec = Math.floor(ms / 1000);
     const m = Math.floor(totalSec / 60);
     const s = totalSec % 60;
-    const mm = String(m).padStart(2, '0');
-    const ss = String(s).padStart(2, '0');
-    return mm + ':' + ss;
+    return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
   }
 
   function renderSceneList() {
@@ -1264,9 +1245,7 @@
       cell.appendChild(main);
       cell.appendChild(sub);
 
-      cell.addEventListener('click', () => {
-        openScene(scene.id);
-      });
+      cell.addEventListener('click', () => openScene(scene.id));
 
       sceneListEl.appendChild(cell);
     });
@@ -1293,6 +1272,23 @@
     if (scene.lastScore != null) bits.push('Last: ' + scene.lastScore.toFixed(0) + '%');
     editorSceneSubtitle.textContent = bits.join(' · ');
     monologueCheckbox.checked = !!scene.isMonologue;
+  }
+
+  function renderBookmarks(scene) {
+    bookmarkList.innerHTML = '';
+    const list = scene.bookmarks || [];
+    if (!list.length) return;
+    list.forEach((bm, idx) => {
+      const pill = document.createElement('span');
+      pill.className = 'bookmark-pill';
+      pill.textContent = (bm.label || 'Bookmark ' + (idx+1)) + ' · ' + formatSeconds(bm.time);
+      pill.addEventListener('click', () => {
+        if (!scene.audioDataUrl) return;
+        audioEl.currentTime = bm.time;
+        audioEl.play().catch(()=>{});
+      });
+      bookmarkList.appendChild(pill);
+    });
   }
 
   function updateTimeline(scene) {
@@ -1323,8 +1319,8 @@
         const pill = document.createElement('span');
         pill.className = 'line-pill';
         if (ln.note && ln.note.trim().length) pill.classList.add('line-pill-note');
-        pill.textContent = '#' + (idx+1) + ' · ' +
-          formatSeconds(ln.start) + ' – ' + formatSeconds(ln.end);
+        pill.textContent = '#' + (idx+1) +
+          ' · ' + formatSeconds(ln.start) + ' – ' + formatSeconds(ln.end);
         pill.addEventListener('click', () => editLineNote(idx));
         lineList.appendChild(pill);
       });
@@ -1333,33 +1329,14 @@
     renderBookmarks(scene);
   }
 
-  function renderBookmarks(scene) {
-    bookmarkList.innerHTML = '';
-    const list = scene.bookmarks || [];
-    if (!list.length) return;
-    list.forEach((bm, idx) => {
-      const pill = document.createElement('span');
-      pill.className = 'bookmark-pill';
-      pill.textContent = (bm.label || 'Bookmark ' + (idx+1)) + ' · ' + formatSeconds(bm.time);
-      pill.addEventListener('click', () => {
-        if (!scene.audioDataUrl) return;
-        audioEl.currentTime = bm.time;
-        audioEl.play().catch(()=>{});
-      });
-      bookmarkList.appendChild(pill);
-    });
-  }
-
   function setRecStatus(text, live=false) {
     recStatus.textContent = text;
-    recDot.classList.remove('live');
-    if (live) recDot.classList.add('live');
+    recDot.classList.toggle('live', !!live);
   }
 
   function setPlayStatus(text, playing=false) {
     playStatus.textContent = text;
-    playDot.classList.remove('playing');
-    if (playing) playDot.classList.add('playing');
+    playDot.classList.toggle('playing', !!playing);
   }
 
   function ensureSessionTimerRunning() {
@@ -1403,8 +1380,7 @@
     }
   }
 
-  /* Screen navigation */
-
+  // Navigation
   newSceneBtn.addEventListener('click', () => {
     newSceneNameInput.value = '';
     newSceneShowInput.value = '';
@@ -1413,9 +1389,14 @@
     newSceneNameInput.focus();
   });
 
-  cancelNewSceneBtn.addEventListener('click', () => {
-    showScreen('list');
-  });
+  cancelNewSceneBtn.addEventListener('click', () => showScreen('list'));
+
+  function updateNewSceneCreateState() {
+    const val = newSceneNameInput.value.trim();
+    if (val.length) createSceneConfirmBtn.classList.remove('disabled');
+    else createSceneConfirmBtn.classList.add('disabled');
+  }
+  newSceneNameInput.addEventListener('input', updateNewSceneCreateState);
 
   createSceneConfirmBtn.addEventListener('click', () => {
     if (createSceneConfirmBtn.classList.contains('disabled')) return;
@@ -1440,14 +1421,6 @@
     openScene(id);
   });
 
-  function updateNewSceneCreateState() {
-    const val = newSceneNameInput.value.trim();
-    if (val.length) createSceneConfirmBtn.classList.remove('disabled');
-    else createSceneConfirmBtn.classList.add('disabled');
-  }
-
-  newSceneNameInput.addEventListener('input', updateNewSceneCreateState);
-
   backToListBtn.addEventListener('click', () => {
     if (isRecording) {
       if (!confirm('Stop recording and go back to the scene list?')) return;
@@ -1457,6 +1430,45 @@
     endSessionIfIdle();
     showScreen('list');
   });
+
+  function setupAudioForScene(scene) {
+    if (!scene.audioDataUrl) return;
+    audioEl.style.display = 'block';
+    // disable practice buttons until metadata is ready
+    playFromStartBtn.disabled = true;
+    playFromLastBtn.disabled = true;
+    repeatSceneBtn.disabled = true;
+    lineDrillBtn.disabled = true;
+    warmupBtn.disabled = true;
+    stopPlayBtn.disabled = true;
+    setMessage('Loading audio…');
+
+    audioEl.onloadedmetadata = () => {
+      const dur = audioEl.duration;
+      if (isFinite(dur) && dur > 0) {
+        scene.duration = dur;
+        saveScenes();
+      }
+      updateEditorHeader(scene);
+      updateTimeline(scene);
+      setMessage('Record the full scene, marking your lines as you go.');
+
+      playFromStartBtn.disabled = false;
+      repeatSceneBtn.disabled = false;
+      warmupBtn.disabled = false;
+      if (scene.lines && scene.lines.length) {
+        lineDrillBtn.disabled = false;
+        playFromLastBtn.disabled = false;
+      }
+    };
+
+    audioEl.onerror = () => {
+      console.error('Audio error for scene', scene.id);
+      setMessage('Could not load audio for this scene.', true);
+    };
+
+    audioEl.src = scene.audioDataUrl;
+  }
 
   function openScene(id) {
     if (isRecording) {
@@ -1473,44 +1485,37 @@
     renameSceneBtn.classList.remove('disabled');
     deleteSceneBtn.classList.remove('disabled');
 
+    audioEl.onloadedmetadata = null;
+    audioEl.onerror = null;
+
     if (scene.audioDataUrl) {
-      audioEl.src = scene.audioDataUrl;
-      audioEl.style.display = 'block';
-      startRecBtn.disabled = false;
-      reRecordBtn.disabled = false;
-      playFromStartBtn.disabled = false;
-      repeatSceneBtn.disabled = false;
-      lineDrillBtn.disabled = !(scene.lines && scene.lines.length);
-      warmupBtn.disabled = false;
-      playFromLastBtn.disabled = !(scene.lines && scene.lines.length);
-      myLineBtn.disabled = true;
-      updateTimeline(scene);
+      setupAudioForScene(scene);
     } else {
       audioEl.removeAttribute('src');
       audioEl.style.display = 'none';
-      startRecBtn.disabled = false;
-      reRecordBtn.disabled = true;
       playFromStartBtn.disabled = true;
       playFromLastBtn.disabled = true;
       repeatSceneBtn.disabled = true;
       lineDrillBtn.disabled = true;
       warmupBtn.disabled = true;
-      myLineBtn.disabled = true;
+      stopPlayBtn.disabled = true;
       timelineEl.style.display = 'none';
+      setMessage('Record the full scene, marking your lines as you go.');
     }
 
-    stopPlayBtn.disabled = true;
+    startRecBtn.disabled = !canRecord;
+    reRecordBtn.disabled = !scene.audioDataUrl || !canRecord;
+    stopRecBtn.disabled = true;
+    myLineBtn.disabled = true;
     setRecStatus('Not recording', false);
     setPlayStatus('Not playing', false);
-    setMessage('Record the full scene, marking your lines as you go.');
     scoreSummary.style.display = 'none';
     ratingPanel.style.display = 'none';
 
     showScreen('editor');
   }
 
-  /* Rename / delete */
-
+  // Rename / delete
   renameSceneBtn.addEventListener('click', () => {
     if (renameSceneBtn.classList.contains('disabled')) return;
     const scene = getCurrentScene();
@@ -1534,9 +1539,10 @@
     refreshShowList();
     renderSceneList();
     currentSceneId = null;
+
     audioEl.removeAttribute('src');
     audioEl.style.display = 'none';
-    startRecBtn.disabled = true;
+    startRecBtn.disabled = !canRecord;
     stopRecBtn.disabled = true;
     reRecordBtn.disabled = true;
     myLineBtn.disabled = true;
@@ -1562,8 +1568,7 @@
     updateEditorHeader(scene);
   });
 
-  /* Line notes */
-
+  // Line notes
   function editLineNote(index) {
     const scene = getCurrentScene();
     if (!scene || !scene.lines || !scene.lines[index]) return;
@@ -1576,8 +1581,7 @@
     updateTimeline(scene);
   }
 
-  /* Bookmarks */
-
+  // Bookmarks
   addBookmarkBtn.addEventListener('click', () => {
     const scene = getCurrentScene();
     if (!scene || !scene.audioDataUrl) {
@@ -1594,16 +1598,15 @@
     setMessage('Bookmark added at ' + formatSeconds(t) + '.');
   });
 
-  /* Recording */
-
+  // Recording
   async function startRecording() {
     const scene = getCurrentScene();
     if (!scene) {
       setMessage('Choose or create a scene first.', true);
       return;
     }
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      setMessage('Your browser does not support microphone recording.', true);
+    if (!canRecord) {
+      setMessage('Recording is not supported in this browser on this device.', true);
       return;
     }
     if (isPlaying) stopPlayback();
@@ -1614,7 +1617,12 @@
       recStartTime = performance.now();
       currentLine = null;
 
-      mediaRecorder = new MediaRecorder(mediaStream);
+      const options = {};
+      if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/webm')) {
+        options.mimeType = 'audio/webm';
+      }
+      mediaRecorder = new MediaRecorder(mediaStream, options);
+
       mediaRecorder.ondataavailable = (e) => {
         if (e.data && e.data.size > 0) recChunks.push(e.data);
       };
@@ -1659,30 +1667,41 @@
     setRecStatus('Finishing recording…', false);
 
     mediaRecorder.stop();
-    mediaStream.getTracks().forEach(t => t.stop());
-    mediaStream = null;
+    if (mediaStream) {
+      mediaStream.getTracks().forEach(t => t.stop());
+      mediaStream = null;
+    }
     endSessionIfIdle();
   }
 
   function handleRecordingStop() {
+    const scene = getCurrentScene();
+    if (!scene) return;
+
+    if (!recChunks.length) {
+      setRecStatus('Not recording', false);
+      setMessage('No audio captured. Try recording again.', true);
+      startRecBtn.disabled = !canRecord;
+      reRecordBtn.disabled = !!scene.audioDataUrl && canRecord;
+      return;
+    }
+
     const blob = new Blob(recChunks, { type: 'audio/webm' });
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const dataUrl = reader.result;
-      const scene = getCurrentScene();
-      if (!scene) return;
+    recChunks = [];
 
-      if (!scene.lines) scene.lines = [];
-      scene.lines = scene.lines
-        .filter(ln => ln && typeof ln.start === 'number' && typeof ln.end === 'number' && ln.end > ln.start)
-        .sort((a,b)=>a.start-b.start);
+    // First: load via blob URL to get a reliable duration
+    const blobUrl = URL.createObjectURL(blob);
+    audioEl.onloadedmetadata = null;
+    audioEl.onerror = null;
+    audioEl.src = blobUrl;
+    audioEl.style.display = 'block';
 
-      scene.audioDataUrl = dataUrl;
-      scene.created = Date.now();
-      audioEl.src = dataUrl;
-
-      audioEl.onloadedmetadata = () => {
-        scene.duration = audioEl.duration || 0;
+    function finalizeWithDuration(duration) {
+      scene.duration = duration;
+      // Now store as data URL in localStorage
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        scene.audioDataUrl = reader.result;
         saveScenes();
         renderSceneList();
         refreshShowList();
@@ -1690,19 +1709,50 @@
         updateTimeline(scene);
         setRecStatus('Not recording', false);
         setMessage('Recording saved. Use the practice modes to run the scene.');
-        startRecBtn.disabled = false;
-        reRecordBtn.disabled = false;
+        startRecBtn.disabled = !canRecord;
+        reRecordBtn.disabled = !canRecord;
         playFromStartBtn.disabled = false;
         repeatSceneBtn.disabled = false;
-        lineDrillBtn.disabled = !(scene.lines && scene.lines.length);
         warmupBtn.disabled = false;
         playFromLastBtn.disabled = !(scene.lines && scene.lines.length);
+        lineDrillBtn.disabled = !(scene.lines && scene.lines.length);
         myLineBtn.disabled = true;
-        audioEl.style.display = 'block';
         scoreSummary.style.display = 'none';
+
+        // Switch the audio element to use the stored data URL
+        audioEl.src = scene.audioDataUrl;
+        URL.revokeObjectURL(blobUrl);
       };
+      reader.readAsDataURL(blob);
+    }
+
+    audioEl.onloadedmetadata = () => {
+      let dur = audioEl.duration;
+
+      if (dur === Infinity) {
+        // Safari sometimes reports Infinity: seek to a big time to force duration
+        audioEl.currentTime = 1e7;
+        audioEl.ontimeupdate = () => {
+          audioEl.ontimeupdate = null;
+          dur = audioEl.duration;
+          if (!isFinite(dur) || dur <= 0) dur = 0;
+          audioEl.currentTime = 0;
+          finalizeWithDuration(dur);
+        };
+      } else {
+        if (!isFinite(dur) || dur <= 0) dur = 0;
+        finalizeWithDuration(dur);
+      }
     };
-    reader.readAsDataURL(blob);
+
+    audioEl.onerror = () => {
+      console.error('Error reading audio metadata from recording');
+      // Still save the blob as data URL, but duration may be 0
+      finalizeWithDuration(0);
+    };
+
+    // Trigger metadata load
+    audioEl.load();
   }
 
   function handleLineHoldStart() {
@@ -1727,7 +1777,7 @@
     myLineBtn.classList.remove('active');
   }
 
-  // My-line button (mouse + touch)
+  // My-line button events
   myLineBtn.addEventListener('mousedown', (e) => {
     e.preventDefault();
     handleLineHoldStart();
@@ -1755,9 +1805,14 @@
 
   startRecBtn.addEventListener('click', startRecording);
   stopRecBtn.addEventListener('click', stopRecording);
+
   reRecordBtn.addEventListener('click', () => {
     const scene = getCurrentScene();
     if (!scene) return;
+    if (!canRecord) {
+      setMessage('Recording is not supported in this browser on this device.', true);
+      return;
+    }
     if (!confirm('Re-record this scene? Existing audio and lines will be replaced.')) return;
     scene.audioDataUrl = '';
     scene.duration = 0;
@@ -1777,8 +1832,7 @@
     startRecording();
   });
 
-  /* Playback + rating */
-
+  // Playback + rating
   function validateSpeed() {
     let v = parseFloat(speedInput.value);
     if (!isFinite(v)) v = 1.0;
@@ -1875,9 +1929,7 @@
 
   function playSection(start, end, speed) {
     return new Promise((resolve, reject) => {
-      if (stopPlaybackRequested) {
-        resolve(false); return;
-      }
+      if (stopPlaybackRequested) { resolve(false); return; }
       audioEl.currentTime = start;
       audioEl.playbackRate = speed;
 
@@ -1968,7 +2020,7 @@
 
     const duration = scene.duration || audioEl.duration || 0;
     if (!isFinite(duration) || duration <= 0) {
-      setMessage('Could not determine audio duration.', true);
+      setMessage('Could not determine audio duration yet. Wait a second and try again.', true);
       return;
     }
 
@@ -1999,11 +2051,9 @@
       startTime = lines[lines.length - 1].start;
     }
 
-    // Monologue: just play full scene regardless of mode, no scoring logic
+    // Monologue or mode 1 or no lines: just play straight through
     if (isMono || mode === 1 || !lines.length) {
-      try {
-        await playSection(startTime, duration, speed);
-      } catch (_) {}
+      try { await playSection(startTime, duration, speed); } catch (_) {}
       stopPlayback();
       return;
     }
@@ -2029,6 +2079,7 @@
           t = lineStart;
         }
 
+        // pause before your line
         const pauseMs = factor * L * (1000 / speed);
         setPlayStatus('Pause before your line…', true);
         const okPause = await waitWithCancel(pauseMs);
@@ -2040,8 +2091,7 @@
           if (!okLine || stopPlaybackRequested) break;
           t = lineEnd;
         } else {
-          // skip over your line silently
-          t = lineEnd;
+          t = lineEnd; // silently skip your line
         }
 
         setPlayStatus('Playing scene…', true);
@@ -2054,7 +2104,7 @@
       return;
     }
 
-    // With scoring enabled (modes 2/3 only)
+    // With scoring enabled (modes 2/3)
     for (const ln of relevantLines) {
       if (stopPlaybackRequested) break;
 
@@ -2108,7 +2158,7 @@
     const speed = validateSpeed();
     const duration = scene.duration || audioEl.duration || 0;
     if (!isFinite(duration) || duration <= 0) {
-      setMessage('Could not determine audio duration.', true);
+      setMessage('Could not determine audio duration yet. Wait a second and try again.', true);
       return;
     }
 
@@ -2116,7 +2166,7 @@
     isPlaying = true;
     stopPlayBtn.disabled = false;
     setPlayStatus('Repeating full scene', true);
-    setMessage('Repeating full scene (mode 1) until you tap Stop.');
+    setMessage('Repeating full scene until you tap Stop.');
     ratingPanel.style.display = 'none';
     scoreSummary.style.display = 'none';
     currentRunRatings = {};
@@ -2148,7 +2198,7 @@
     const duration = scene.duration || audioEl.duration || 0;
     const speed = validateSpeed();
     if (!isFinite(duration) || duration <= 0) {
-      setMessage('Could not determine audio duration.', true);
+      setMessage('Could not determine audio duration yet. Wait a second and try again.', true);
       return;
     }
 
@@ -2178,7 +2228,7 @@
       const end = Math.min(duration, ln.end);
       const ok = await playSection(contextStart, end, speed);
       if (!ok || stopPlaybackRequested) break;
-      await waitWithCancel(250 / speed); // small gap between lines
+      await waitWithCancel(250 / speed);
     }
 
     stopPlayback();
@@ -2197,7 +2247,7 @@
 
     const duration = scene.duration || audioEl.duration || 0;
     if (!isFinite(duration) || duration <= 0) {
-      setMessage('Could not determine audio duration.', true);
+      setMessage('Could not determine audio duration yet. Wait a second and try again.', true);
       return;
     }
 
@@ -2235,13 +2285,9 @@
   warmupBtn.addEventListener('click', () => warmupScene());
   stopPlayBtn.addEventListener('click', () => stopPlayback());
 
-  /* Export / Import */
-
+  // Export / import
   exportBtn.addEventListener('click', () => {
-    const data = {
-      version: 1,
-      scenes
-    };
+    const data = { version: 1, scenes };
     const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -2255,9 +2301,7 @@
     setMessage('Exported all shows and scenes as a JSON file.');
   });
 
-  importBtn.addEventListener('click', () => {
-    importFileInput.click();
-  });
+  importBtn.addEventListener('click', () => importFileInput.click());
 
   importFileInput.addEventListener('change', (e) => {
     const file = e.target.files && e.target.files[0];
@@ -2286,8 +2330,7 @@
     importFileInput.value = '';
   });
 
-  /* Init */
-
+  // Init
   loadScenes();
   loadSessionMeta();
   refreshShowList();
@@ -2295,14 +2338,16 @@
   validateSpeed();
   setRecStatus('Not recording', false);
   setPlayStatus('Not playing', false);
-  setMessage('Choose or create a scene to get started.');
+  setMessage(canRecord
+    ? 'Choose or create a scene to get started.'
+    : 'This browser cannot record audio, but you can still import and practice scenes.');
   scoreSummary.style.display = 'none';
   ratingPanel.style.display = 'none';
   updateSessionStatus();
   ensureSessionTimerRunning();
 
   // Disable editor until a scene is selected
-  startRecBtn.disabled = true;
+  startRecBtn.disabled = !canRecord;
   stopRecBtn.disabled = true;
   reRecordBtn.disabled = true;
   myLineBtn.disabled = true;
