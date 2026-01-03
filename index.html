@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     :root {
-      /* Light theme defaults */
       --bg: #f5f5f7;
       --paper: #ffffff;
       --nav: #f9f9fb;
@@ -22,7 +21,6 @@
       --shadow-soft: 0 10px 30px rgba(0,0,0,0.08);
     }
 
-    /* Dark mode overrides */
     body[data-theme="dark"] {
       --bg: #050816;
       --paper: #020617;
@@ -63,8 +61,6 @@
       position: relative;
     }
 
-    /* Screens */
-
     .screen {
       display: none;
       flex: 1;
@@ -74,8 +70,6 @@
       display: flex;
       flex-direction: column;
     }
-
-    /* Nav */
 
     .nav {
       position: sticky;
@@ -89,7 +83,6 @@
       align-items: center;
       justify-content: space-between;
     }
-
     body[data-theme="dark"] .nav {
       background: rgba(9,9,11,0.96);
       border-bottom-color: rgba(148,163,184,0.3);
@@ -100,7 +93,6 @@
       font-size: 17px;
       letter-spacing: 0.02em;
     }
-
     .nav-subtitle {
       font-size: 12px;
       color: var(--muted);
@@ -125,13 +117,10 @@
     body[data-theme="dark"] .nav-btn {
       color: #4f9dff;
     }
-
     .nav-btn.disabled {
       opacity: 0.35;
       pointer-events: none;
     }
-
-    /* Theme toggle */
 
     .theme-toggle {
       position: fixed;
@@ -156,8 +145,6 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.7);
     }
 
-    /* Scene list */
-
     .list-container {
       margin-top: 10px;
       border-radius: var(--radius-xl);
@@ -165,7 +152,6 @@
       box-shadow: var(--shadow-soft);
       overflow: hidden;
     }
-
     .list-header {
       padding: 10px 14px 6px;
       border-bottom: 1px solid rgba(0,0,0,0.05);
@@ -180,7 +166,6 @@
       display: flex;
       flex-direction: column;
     }
-
     .scene-cell {
       padding: 10px 14px;
       border-bottom: 1px solid rgba(0,0,0,0.05);
@@ -197,7 +182,6 @@
     body[data-theme="dark"] .scene-cell {
       border-bottom-color: rgba(31,41,55,0.8);
     }
-
     .scene-cell:active {
       background: #f2f2f7;
     }
@@ -268,8 +252,6 @@
       text-align: center;
     }
 
-    /* Cards / Sheets */
-
     .sheet {
       margin-top: 12px;
       border-radius: var(--radius-xl);
@@ -312,8 +294,6 @@
       color: var(--muted);
     }
 
-    /* Editor layout */
-
     .editor-wrapper {
       margin-top: 10px;
       margin-bottom: 10px;
@@ -328,7 +308,6 @@
       box-shadow: var(--shadow-soft);
       padding: 14px 14px 16px;
     }
-
     .editor-header-row {
       display: flex;
       justify-content: space-between;
@@ -336,7 +315,6 @@
       gap: 8px;
       margin-bottom: 4px;
     }
-
     .editor-title {
       font-size: 17px;
       font-weight: 600;
@@ -344,7 +322,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
     .editor-subtext {
       font-size: 13px;
       color: var(--muted);
@@ -380,7 +357,6 @@
       border-color: rgba(75,85,99,0.9);
       color: var(--text);
     }
-
     .btn:disabled {
       opacity: 0.4;
       cursor: default;
@@ -434,7 +410,6 @@
       overflow: hidden;
       border-width: 2px;
     }
-
     .btn-big::before {
       content: "Hold while it's YOUR line";
       position: absolute;
@@ -446,7 +421,6 @@
       color: var(--muted);
       pointer-events: none;
     }
-
     .btn-big.active {
       background: linear-gradient(145deg, #ffe699, #ffd04d);
       border-color: #ffb300;
@@ -456,7 +430,6 @@
       background: linear-gradient(145deg, #facc15, #eab308);
       box-shadow: 0 0 0 2px rgba(250,204,21,0.6), 0 14px 30px rgba(0,0,0,0.6);
     }
-
     .btn-big.active::before {
       content: "Recording YOUR line…";
       color: #4a2a00;
@@ -471,7 +444,6 @@
       margin-top: 10px;
       font-size: 13px;
     }
-
     .field-row label {
       color: var(--muted);
       white-space: nowrap;
@@ -491,7 +463,6 @@
       background: #020617;
       border-color: rgba(75,85,99,0.9);
     }
-
     select:focus,
     input[type="number"]:focus {
       border-color: var(--accent-strong);
@@ -512,7 +483,6 @@
       font-size: 12px;
       color: var(--muted);
     }
-
     .status-pill {
       display: inline-flex;
       align-items: center;
@@ -526,19 +496,14 @@
       background: #020617;
       border-color: rgba(75,85,99,0.8);
     }
-
     .status-dot {
       width: 8px;
       height: 8px;
       border-radius: 999px;
       background: #c7c7cc;
     }
-    .status-dot.live {
-      background: #32d74b;
-    }
-    .status-dot.playing {
-      background: #007aff;
-    }
+    .status-dot.live { background: #32d74b; }
+    .status-dot.playing { background: #007aff; }
 
     .timeline {
       margin-top: 12px;
@@ -561,7 +526,6 @@
       align-items: center;
       color: var(--muted);
     }
-
     .timeline-chips {
       display: inline-flex;
       gap: 5px;
@@ -590,7 +554,6 @@
       flex-wrap: wrap;
       gap: 4px;
     }
-
     .line-pill {
       padding: 2px 7px;
       border-radius: 999px;
@@ -605,7 +568,6 @@
       border-color: rgba(253,224,71,0.7);
       color: #fef9c3;
     }
-
     .line-pill-note::after {
       content: "📝";
       margin-left: 4px;
@@ -618,7 +580,6 @@
       flex-wrap: wrap;
       gap: 4px;
     }
-
     .bookmark-pill {
       padding: 2px 7px;
       border-radius: 999px;
@@ -643,14 +604,8 @@
       margin-top: 8px;
       font-size: 12px;
     }
-    .msg-info {
-      color: var(--muted);
-    }
-    .msg-error {
-      color: var(--danger);
-    }
-
-    /* Rating */
+    .msg-info { color: var(--muted); }
+    .msg-error { color: var(--danger); }
 
     .rating-panel {
       margin-top: 10px;
@@ -664,19 +619,16 @@
       background: #020617;
       border-color: rgba(75,85,99,0.8);
     }
-
     .rating-question {
       font-size: 13px;
       margin-bottom: 6px;
     }
-
     .rating-buttons {
       display: flex;
       gap: 6px;
       margin-bottom: 4px;
       flex-wrap: wrap;
     }
-
     .rating-btn-right {
       border-color: #34c759;
       background: #e7fbe9;
@@ -687,7 +639,6 @@
       border-color: rgba(34,197,94,0.9);
       color: #bbf7d0;
     }
-
     .rating-btn-somewhat {
       border-color: #ffcc00;
       background: #fff7d6;
@@ -698,7 +649,6 @@
       border-color: rgba(234,179,8,0.9);
       color: #fef3c7;
     }
-
     .rating-btn-wrong {
       border-color: #ff3b30;
       background: #ffe8e6;
@@ -709,7 +659,6 @@
       border-color: rgba(239,68,68,0.9);
       color: #fecaca;
     }
-
     .rating-progress {
       font-size: 11px;
       color: var(--muted);
@@ -734,12 +683,8 @@
         flex-direction: row;
         align-items: flex-start;
       }
-      .editor-card.main {
-        flex: 2;
-      }
-      .editor-card.side {
-        flex: 1.2;
-      }
+      .editor-card.main { flex: 2; }
+      .editor-card.side { flex: 1.2; }
     }
   </style>
 </head>
@@ -788,7 +733,7 @@
              placeholder="e.g. Act 2 – Balcony" autocomplete="off" />
       <div class="field-label" style="margin-top:10px;">Show / project (acts like a file)</div>
       <input id="newSceneShowInput" class="text-input" type="text"
-             placeholder="e.g. Romeo & Juliet" autocomplete="off" list="showList" />
+             placeholder="e.g. Romeo &amp; Juliet" autocomplete="off" list="showList" />
       <datalist id="showList"></datalist>
       <div class="hint">
         Choose an existing show name or type a new one – recordings from the same show stay together.
@@ -813,7 +758,7 @@
     <div class="editor-wrapper">
       <div class="editor-card main">
         <div class="editor-header-row">
-          <div class="editor-title">Record & Mark Lines</div>
+          <div class="editor-title">Record &amp; Mark Lines</div>
           <label style="font-size:11px;display:flex;align-items:center;gap:4px;">
             <input id="monologueCheckbox" type="checkbox" />
             Monologue scene
@@ -859,7 +804,7 @@
 
       <div class="editor-card side">
         <div class="editor-header-row">
-          <div class="editor-title" style="font-size:15px;">Practice & Tools</div>
+          <div class="editor-title" style="font-size:15px;">Practice &amp; Tools</div>
         </div>
 
         <div class="field-row">
@@ -941,7 +886,6 @@
           </div>
         </div>
 
-        <!-- Rating -->
         <div id="ratingPanel" class="rating-panel">
           <div id="ratingQuestion" class="rating-question">Did you get your line right?</div>
           <div class="rating-buttons">
@@ -964,36 +908,104 @@
     </div>
   </div>
 
-  <!-- Theme toggle -->
   <div id="themeToggle" class="theme-toggle">☾</div>
 
 </div>
 
 <script>
 (function() {
-  const STORAGE_KEY = 'lineLearnerScenes_v6'; // keep same key so old data still works
+  const STORAGE_KEY = 'lineLearnerScenes_v7';
   const THEME_KEY = 'lineLearnerTheme';
   const SESSION_KEY = 'lineLearnerSession';
-  const CONTEXT_SECONDS = 0.8; // context in line drill
+  const CONTEXT_SECONDS = 0.8;
 
-  // Capability check (esp. for iOS)
+  // Audio in IndexedDB (blobs per scene)
+  const AUDIO_DB_NAME = 'lineLearnerAudio_v1';
+  const AUDIO_STORE = 'audio';
+  let audioDBPromise = null;
+  let currentAudioUrl = null; // for revoking blob URLs
+
+  function getAudioDB() {
+    if (!audioDBPromise) {
+      audioDBPromise = new Promise((resolve, reject) => {
+        const req = indexedDB.open(AUDIO_DB_NAME, 1);
+        req.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains(AUDIO_STORE)) {
+            db.createObjectStore(AUDIO_STORE);
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+    return audioDBPromise;
+  }
+
+  async function saveAudioBlob(sceneId, blob) {
+    try {
+      const db = await getAudioDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(AUDIO_STORE, 'readwrite');
+        tx.objectStore(AUDIO_STORE).put(blob, sceneId);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch (e) {
+      console.error('Error saving audio blob', e);
+    }
+  }
+
+  async function loadAudioBlob(sceneId) {
+    try {
+      const db = await getAudioDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(AUDIO_STORE, 'readonly');
+        const req = tx.objectStore(AUDIO_STORE).get(sceneId);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => reject(req.error);
+      });
+    } catch (e) {
+      console.error('Error loading audio blob', e);
+      return null;
+    }
+  }
+
+  async function deleteAudioBlob(sceneId) {
+    try {
+      const db = await getAudioDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(AUDIO_STORE, 'readwrite');
+        tx.objectStore(AUDIO_STORE).delete(sceneId);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch (e) {
+      console.error('Error deleting audio blob', e);
+    }
+  }
+
+  // Capability check
   const canRecord = !!(
     navigator.mediaDevices &&
     navigator.mediaDevices.getUserMedia &&
     typeof MediaRecorder !== 'undefined'
   );
 
-  /* Scene shape:
-     {
-       id, name, show, created,
-       audioDataUrl, duration,
-       lines:[{start,end,note?}],
-       isMonologue?: boolean,
-       lastPracticed?: number,
-       lastScore?: number,
-       practiceCount?: number,
-       bookmarks?: [{time,label}]
-     }
+  /*
+    Scene shape:
+    {
+      id, name, show, created,
+      hasAudio?: boolean,      // audio blob stored in IndexedDB
+      audioDataUrl?: string,   // optional legacy fallback
+      duration,
+      lines:[{start,end,note?}],  // line order preserved as recorded
+      isMonologue?: boolean,
+      lastPracticed?: number,
+      lastScore?: number,
+      practiceCount?: number,
+      bookmarks?: [{time,label}]
+    }
   */
   let scenes = [];
   let currentSceneId = null;
@@ -1017,13 +1029,11 @@
 
   // Theme
   const themeToggle = document.getElementById('themeToggle');
-
   function applyTheme(theme) {
     document.body.dataset.theme = theme;
     localStorage.setItem(THEME_KEY, theme);
     themeToggle.textContent = theme === 'dark' ? '☀︎' : '☾';
   }
-
   (function initTheme() {
     const saved = localStorage.getItem(THEME_KEY);
     if (saved === 'dark' || saved === 'light') {
@@ -1034,13 +1044,12 @@
       applyTheme(prefersDark ? 'dark' : 'light');
     }
   })();
-
   themeToggle.addEventListener('click', () => {
     const cur = document.body.dataset.theme === 'dark' ? 'dark' : 'light';
     applyTheme(cur === 'dark' ? 'light' : 'dark');
   });
 
-  // List screen elements
+  // List screen
   const sceneListEl = document.getElementById('sceneList');
   const sceneListEmpty = document.getElementById('sceneListEmpty');
   const newSceneBtn = document.getElementById('newSceneBtn');
@@ -1124,8 +1133,6 @@
   let ratingResolve = null;
   let ratingLineIndex = null;
 
-  /* Helpers */
-
   function setMessage(text, isError=false) {
     messageArea.textContent = text || '';
     messageArea.className = 'msg ' + (isError ? 'msg-error' : 'msg-info');
@@ -1175,9 +1182,7 @@
   }
 
   function refreshShowList() {
-    const names = Array.from(new Set(
-      scenes.map(s => s.show).filter(Boolean)
-    )).sort();
+    const names = Array.from(new Set(scenes.map(s => s.show).filter(Boolean))).sort();
     showListEl.innerHTML = '';
     names.forEach(name => {
       const opt = document.createElement('option');
@@ -1234,7 +1239,8 @@
       const mini = document.createElement('div');
       mini.className = 'scene-mini-meta';
       const bits = [];
-      const durationText = scene.duration ? formatSeconds(scene.duration) : 'Unrecorded';
+      const durationText = scene.duration ? formatSeconds(scene.duration) :
+        (scene.hasAudio || scene.audioDataUrl ? 'Recorded' : 'Unrecorded');
       bits.push(durationText);
       if (scene.lastScore != null) bits.push('Last: ' + scene.lastScore.toFixed(0) + '%');
       mini.textContent = bits.join(' · ');
@@ -1303,7 +1309,7 @@
       pill.className = 'bookmark-pill';
       pill.textContent = (bm.label || 'Bookmark ' + (idx+1)) + ' · ' + formatSeconds(bm.time);
       pill.addEventListener('click', () => {
-        if (!scene.audioDataUrl) return;
+        if (!scene.hasAudio && !scene.audioDataUrl) return;
         audioEl.currentTime = bm.time;
         audioEl.play().catch(()=>{});
       });
@@ -1312,7 +1318,7 @@
   }
 
   function updateTimeline(scene) {
-    if (!scene || !scene.audioDataUrl) {
+    if (!scene || (!scene.hasAudio && !scene.audioDataUrl)) {
       timelineEl.style.display = 'none';
       return;
     }
@@ -1335,6 +1341,7 @@
       span.textContent = 'You haven’t marked any of your lines in this recording yet.';
       lineList.appendChild(span);
     } else {
+      // IMPORTANT: show in original order, not sorted
       scene.lines.forEach((ln, idx) => {
         const pill = document.createElement('span');
         pill.className = 'line-pill';
@@ -1376,7 +1383,9 @@
 
   function updateSessionStatus() {
     let totalMs = sessionAccumMs;
-    if (sessionStart) totalMs += (Date.now() - sessionStart);
+    if (sessionStart) {
+      totalMs += (Date.now() - sessionStart);
+    }
     const goalMin = parseFloat(goalMinutesInput.value) || 0;
     if (!goalMin) {
       sessionStatus.textContent = 'Session time: ' + formatClock(totalMs);
@@ -1398,8 +1407,7 @@
     }
   }
 
-  /* Navigation */
-
+  // Navigation
   newSceneBtn.addEventListener('click', () => {
     newSceneNameInput.value = '';
     newSceneShowInput.value = '';
@@ -1427,7 +1435,7 @@
       name,
       show,
       created: Date.now(),
-      audioDataUrl: '',
+      hasAudio: false,
       duration: 0,
       lines: [],
       isMonologue: false,
@@ -1450,42 +1458,103 @@
     showScreen('list');
   });
 
-  function setupAudioForScene(scene) {
-    if (!scene.audioDataUrl) return;
-    audioEl.style.display = 'block';
+  async function setupAudioForScene(scene) {
+    // Clear previous blob URL
+    if (currentAudioUrl) {
+      URL.revokeObjectURL(currentAudioUrl);
+      currentAudioUrl = null;
+    }
+
+    audioEl.onloadedmetadata = null;
+    audioEl.onerror = null;
+    audioEl.style.display = 'none';
     playFromStartBtn.disabled = true;
     playFromLastBtn.disabled = true;
     repeatSceneBtn.disabled = true;
     lineDrillBtn.disabled = true;
     warmupBtn.disabled = true;
     stopPlayBtn.disabled = true;
+
+    if (!scene || (!scene.hasAudio && !scene.audioDataUrl)) {
+      timelineEl.style.display = 'none';
+      setMessage('Record the full scene, marking your lines as you go.');
+      return;
+    }
+
     setMessage('Loading audio…');
 
-    audioEl.onloadedmetadata = () => {
-      const dur = audioEl.duration;
-      if (isFinite(dur) && dur > 0) {
-        scene.duration = dur;
-        saveScenes();
-      }
-      updateEditorHeader(scene);
-      updateTimeline(scene);
-      setMessage('Record the full scene, marking your lines as you go.');
+    let blob = null;
+    if (scene.hasAudio) {
+      blob = await loadAudioBlob(scene.id);
+    }
 
-      playFromStartBtn.disabled = false;
-      repeatSceneBtn.disabled = false;
-      warmupBtn.disabled = false;
-      if (scene.lines && scene.lines.length) {
-        lineDrillBtn.disabled = false;
-        playFromLastBtn.disabled = false;
-      }
-    };
+    if (blob) {
+      const url = URL.createObjectURL(blob);
+      currentAudioUrl = url;
 
-    audioEl.onerror = () => {
-      console.error('Audio error for scene', scene.id);
-      setMessage('Could not load audio for this scene.', true);
-    };
+      audioEl.onloadedmetadata = () => {
+        let dur = audioEl.duration;
+        if (isFinite(dur) && dur > 0) {
+          scene.duration = dur;
+          saveScenes();
+        }
+        audioEl.currentTime = 0;
+        audioEl.style.display = 'block';
+        updateEditorHeader(scene);
+        updateTimeline(scene);
+        setMessage('Record the full scene, marking your lines as you go.');
 
-    audioEl.src = scene.audioDataUrl;
+        playFromStartBtn.disabled = false;
+        repeatSceneBtn.disabled = false;
+        warmupBtn.disabled = false;
+        if (scene.lines && scene.lines.length) {
+          lineDrillBtn.disabled = false;
+          playFromLastBtn.disabled = false;
+        }
+      };
+
+      audioEl.onerror = () => {
+        console.error('Audio error for scene', scene.id);
+        setMessage('Could not load audio for this scene.', true);
+      };
+
+      audioEl.src = url;
+      return;
+    }
+
+    // Fallback for legacy data URLs
+    if (scene.audioDataUrl) {
+      audioEl.onloadedmetadata = () => {
+        let dur = audioEl.duration;
+        if (isFinite(dur) && dur > 0) {
+          scene.duration = dur;
+          saveScenes();
+        }
+        audioEl.currentTime = 0;
+        audioEl.style.display = 'block';
+        updateEditorHeader(scene);
+        updateTimeline(scene);
+        setMessage('Record the full scene, marking your lines as you go.');
+
+        playFromStartBtn.disabled = false;
+        repeatSceneBtn.disabled = false;
+        warmupBtn.disabled = false;
+        if (scene.lines && scene.lines.length) {
+          lineDrillBtn.disabled = false;
+          playFromLastBtn.disabled = false;
+        }
+      };
+
+      audioEl.onerror = () => {
+        console.error('Audio error (data URL) for scene', scene.id);
+        setMessage('Could not load audio for this scene.', true);
+      };
+
+      audioEl.src = scene.audioDataUrl;
+      return;
+    }
+
+    setMessage('No audio found for this scene on this device. Try re-recording.', true);
   }
 
   function openScene(id) {
@@ -1503,12 +1572,9 @@
     renameSceneBtn.classList.remove('disabled');
     deleteSceneBtn.classList.remove('disabled');
 
-    audioEl.onloadedmetadata = null;
-    audioEl.onerror = null;
+    setupAudioForScene(scene); // async; audio loads without needing to leave the screen
 
-    if (scene.audioDataUrl) {
-      setupAudioForScene(scene);
-    } else {
+    if (!scene.hasAudio && !scene.audioDataUrl) {
       audioEl.removeAttribute('src');
       audioEl.style.display = 'none';
       playFromStartBtn.disabled = true;
@@ -1522,7 +1588,7 @@
     }
 
     startRecBtn.disabled = !canRecord;
-    reRecordBtn.disabled = !scene.audioDataUrl || !canRecord;
+    reRecordBtn.disabled = !(scene.hasAudio || scene.audioDataUrl) || !canRecord;
     stopRecBtn.disabled = true;
     myLineBtn.disabled = true;
     setRecStatus('Not recording', false);
@@ -1533,8 +1599,7 @@
     showScreen('editor');
   }
 
-  /* Rename / delete */
-
+  // Rename / delete
   renameSceneBtn.addEventListener('click', () => {
     if (renameSceneBtn.classList.contains('disabled')) return;
     const scene = getCurrentScene();
@@ -1557,8 +1622,13 @@
     saveScenes();
     refreshShowList();
     renderSceneList();
+    deleteAudioBlob(scene.id); // remove audio blob too
     currentSceneId = null;
 
+    if (currentAudioUrl) {
+      URL.revokeObjectURL(currentAudioUrl);
+      currentAudioUrl = null;
+    }
     audioEl.removeAttribute('src');
     audioEl.style.display = 'none';
     startRecBtn.disabled = !canRecord;
@@ -1587,8 +1657,7 @@
     updateEditorHeader(scene);
   });
 
-  /* Line notes */
-
+  // Line notes
   function editLineNote(index) {
     const scene = getCurrentScene();
     if (!scene || !scene.lines || !scene.lines[index]) return;
@@ -1601,11 +1670,10 @@
     updateTimeline(scene);
   }
 
-  /* Bookmarks */
-
+  // Bookmarks
   addBookmarkBtn.addEventListener('click', () => {
     const scene = getCurrentScene();
-    if (!scene || !scene.audioDataUrl) {
+    if (!scene || (!scene.hasAudio && !scene.audioDataUrl)) {
       setMessage('You need a recording before adding bookmarks.', true);
       return;
     }
@@ -1622,8 +1690,7 @@
     setMessage('Bookmark added at ' + formatSeconds(t) + '.');
   });
 
-  /* Recording */
-
+  // Recording
   async function startRecording() {
     const scene = getCurrentScene();
     if (!scene) {
@@ -1708,76 +1775,76 @@
       setRecStatus('Not recording', false);
       setMessage('No audio captured. Try recording again.', true);
       startRecBtn.disabled = !canRecord;
-      reRecordBtn.disabled = !!scene.audioDataUrl && canRecord;
+      reRecordBtn.disabled = !!scene.hasAudio && canRecord;
       return;
     }
 
     const blob = new Blob(recChunks, { type: 'audio/webm' });
     recChunks = [];
 
-    // Step 1: use blob URL to get reliable duration (mobile-friendly)
+    // Clear previous blob URL if any
+    if (currentAudioUrl) {
+      URL.revokeObjectURL(currentAudioUrl);
+      currentAudioUrl = null;
+    }
+
     const blobUrl = URL.createObjectURL(blob);
+    currentAudioUrl = blobUrl;
+
     audioEl.onloadedmetadata = null;
     audioEl.onerror = null;
     audioEl.src = blobUrl;
     audioEl.style.display = 'block';
 
-    function finalizeWithDuration(duration) {
-      scene.duration = duration;
-
-      // Step 2: convert to data URL for persistence, but keep blobUrl
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        scene.audioDataUrl = reader.result; // for future loads
-        saveScenes();
-        renderSceneList();
-        refreshShowList();
-        updateEditorHeader(scene);
-        updateTimeline(scene);
-        setRecStatus('Not recording', false);
-        setMessage('Recording saved. Use the practice modes to run the scene.');
-        startRecBtn.disabled = !canRecord;
-        reRecordBtn.disabled = !canRecord;
-        playFromStartBtn.disabled = false;
-        repeatSceneBtn.disabled = false;
-        warmupBtn.disabled = false;
-        playFromLastBtn.disabled = !(scene.lines && scene.lines.length);
-        lineDrillBtn.disabled = !(scene.lines && scene.lines.length);
-        myLineBtn.disabled = true;
-        scoreSummary.style.display = 'none';
-
-        // IMPORTANT: do NOT change audioEl.src here.
-        // Let it keep using blobUrl for this session.
-        // Next time you open the scene, it will use scene.audioDataUrl.
-      };
-      reader.readAsDataURL(blob);
-    }
-
     audioEl.onloadedmetadata = () => {
       let dur = audioEl.duration;
+      if (!isFinite(dur) || dur <= 0) dur = 0;
 
-      if (dur === Infinity) {
-        // Safari sometimes reports Infinity: seek far to force duration
-        audioEl.currentTime = 1e7;
-        audioEl.ontimeupdate = () => {
-          audioEl.ontimeupdate = null;
-          dur = audioEl.duration;
-          if (!isFinite(dur) || dur <= 0) dur = 0;
-          audioEl.currentTime = 0;
-          finalizeWithDuration(dur);
-        };
-      } else {
-        if (!isFinite(dur) || dur <= 0) dur = 0;
-        finalizeWithDuration(dur);
-      }
+      scene.duration = dur;
+      scene.hasAudio = true;
+      // we no longer store new audioDataUrl in localStorage for size reasons
+      saveScenes();
+
+      // Save blob to IndexedDB in background
+      saveAudioBlob(scene.id, blob).catch(err => {
+        console.error('IDB save failed', err);
+        setMessage('Recording saved, but this browser may not keep audio between sessions.', true);
+      });
+
+      renderSceneList();
+      refreshShowList();
+      updateEditorHeader(scene);
+      updateTimeline(scene);
+      setRecStatus('Not recording', false);
+      setMessage('Recording saved. Use the practice modes to run the scene.');
+
+      startRecBtn.disabled = !canRecord;
+      reRecordBtn.disabled = !canRecord;
+      playFromStartBtn.disabled = false;
+      repeatSceneBtn.disabled = false;
+      warmupBtn.disabled = false;
+      playFromLastBtn.disabled = !(scene.lines && scene.lines.length);
+      lineDrillBtn.disabled = !(scene.lines && scene.lines.length);
+      myLineBtn.disabled = true;
+      scoreSummary.style.display = 'none';
     };
 
     audioEl.onerror = () => {
       console.error('Error reading audio metadata from recording');
-      finalizeWithDuration(0);
+      scene.duration = 0;
+      scene.hasAudio = true;
+      saveScenes();
+      saveAudioBlob(scene.id, blob).catch(err => {
+        console.error('IDB save failed (onerror)', err);
+      });
+      renderSceneList();
+      refreshShowList();
+      updateEditorHeader(scene);
+      updateTimeline(scene);
+      setRecStatus('Not recording', false);
+      setMessage('Recording saved with unknown duration.');
     };
 
-    // Trigger metadata load
     audioEl.load();
   }
 
@@ -1796,7 +1863,10 @@
       const scene = getCurrentScene();
       if (scene) {
         if (!scene.lines) scene.lines = [];
+        // push at the end – this preserves the order you mark them
         scene.lines.push({ start: currentLine.start, end: t });
+        saveScenes();
+        updateTimeline(scene);
       }
     }
     currentLine = null;
@@ -1840,12 +1910,16 @@
       return;
     }
     if (!confirm('Re-record this scene? Existing audio and lines will be replaced.')) return;
-    scene.audioDataUrl = '';
+    scene.hasAudio = false;
     scene.duration = 0;
     scene.lines = [];
     scene.bookmarks = [];
     saveScenes();
     updateTimeline(scene);
+    if (currentAudioUrl) {
+      URL.revokeObjectURL(currentAudioUrl);
+      currentAudioUrl = null;
+    }
     audioEl.removeAttribute('src');
     audioEl.style.display = 'none';
     playFromStartBtn.disabled = true;
@@ -1855,11 +1929,11 @@
     warmupBtn.disabled = true;
     scoreSummary.style.display = 'none';
     ratingPanel.style.display = 'none';
+    deleteAudioBlob(scene.id);
     startRecording();
   });
 
-  /* Playback + rating */
-
+  // Playback / rating
   function validateSpeed() {
     let v = parseFloat(speedInput.value);
     if (!isFinite(v)) v = 1.0;
@@ -1869,7 +1943,6 @@
     speedDisplay.textContent = v.toFixed(2) + '×';
     return v;
   }
-
   speedInput.addEventListener('change', validateSpeed);
   speedInput.addEventListener('blur', validateSpeed);
 
@@ -1998,16 +2071,16 @@
     });
   }
 
-  function askForRating(lineIndex, totalLines) {
+  function askForRating(originalIndex, totalLines) {
     return new Promise(resolve => {
       if (stopPlaybackRequested) {
         resolve(false);
         return;
       }
-      ratingLineIndex = lineIndex;
+      ratingLineIndex = originalIndex;
       ratingResolve = resolve;
       ratingPanel.style.display = 'block';
-      ratingQuestion.textContent = 'Line #' + (lineIndex + 1) + ' – how did you do?';
+      ratingQuestion.textContent = 'Line #' + (originalIndex + 1) + ' – how did you do?';
       const ratedSoFar = Object.keys(currentRunRatings).length;
       ratingProgress.textContent = 'Rated ' + ratedSoFar + ' of ' + totalLines + ' lines.';
     });
@@ -2031,7 +2104,7 @@
 
   async function playScene(fromLastLine=false) {
     const scene = getCurrentScene();
-    if (!scene || !scene.audioDataUrl) {
+    if (!scene || (!scene.hasAudio && !scene.audioDataUrl)) {
       setMessage('No recording for this scene yet.', true);
       return;
     }
@@ -2051,8 +2124,12 @@
       return;
     }
 
-    const lines = (scene.lines || [])
-      .filter(ln => ln && typeof ln.start === 'number' && typeof ln.end === 'number' && ln.end > ln.start)
+    const rawLines = scene.lines || [];
+    // Make a sorted copy for chronological playback, but do NOT modify original order
+    const linesChrono = rawLines
+      .map((ln, idx) => ln && typeof ln.start === 'number' && typeof ln.end === 'number'
+        ? { ...ln, _idx: idx } : null)
+      .filter(ln => ln && ln.end > ln.start)
       .sort((a,b)=>a.start-b.start);
 
     stopPlaybackRequested = false;
@@ -2063,10 +2140,10 @@
     ratingPanel.style.display = 'none';
     startSessionIfNeeded();
 
-    if (ratingEnabled && !isMono && mode !== 1 && lines.length) {
+    if (ratingEnabled && !isMono && mode !== 1 && linesChrono.length) {
       scoreSummary.style.display = 'none';
       currentRunRatings = {};
-      currentRunTotalLines = lines.length;
+      currentRunTotalLines = rawLines.length; // total marked lines in scene (original order)
     } else {
       scoreSummary.style.display = 'none';
       currentRunRatings = {};
@@ -2074,12 +2151,11 @@
     }
 
     let startTime = 0;
-    if (fromLastLine && lines.length) {
-      startTime = lines[lines.length - 1].start;
+    if (fromLastLine && linesChrono.length) {
+      startTime = linesChrono[linesChrono.length - 1].start;
     }
 
-    // Monologue / full-scene / no lines: just play through
-    if (isMono || mode === 1 || !lines.length) {
+    if (isMono || mode === 1 || !linesChrono.length) {
       try { await playSection(startTime, duration, speed); } catch (_) {}
       stopPlayback();
       return;
@@ -2087,11 +2163,10 @@
 
     const factor = (mode === 2) ? 1.5 : (mode === 3 ? 1.0 : 1.0);
     const cueOnly = (mode === 4);
-    const relevantLines = lines.filter(ln => ln.end > startTime);
+    const relevantLines = linesChrono.filter(ln => ln.end > startTime);
     let t = startTime;
 
     if (!ratingEnabled || cueOnly) {
-      // Pauses / cue-only but no scoring
       for (const ln of relevantLines) {
         if (stopPlaybackRequested) break;
 
@@ -2100,14 +2175,12 @@
         const L = Math.max(0, lineEnd - lineStart);
         if (L <= 0.02) continue;
 
-        // Play up to your line (previous lines as context)
         if (lineStart > t + 0.01) {
           const ok = await playSection(t, lineStart, speed);
           if (!ok || stopPlaybackRequested) break;
           t = lineStart;
         }
 
-        // Pause before your line
         const pauseMs = factor * L * (1000 / speed);
         setPlayStatus('Pause before your line…', true);
         const okPause = await waitWithCancel(pauseMs);
@@ -2119,7 +2192,7 @@
           if (!okLine || stopPlaybackRequested) break;
           t = lineEnd;
         } else {
-          t = lineEnd; // silently skip your line
+          t = lineEnd;
         }
 
         setPlayStatus('Playing scene…', true);
@@ -2141,10 +2214,9 @@
       const L = Math.max(0, lineEnd - lineStart);
       if (L <= 0.02) continue;
 
-      const lineIndex = lines.indexOf(ln);
+      const originalIndex = ln._idx;
 
       if (lineStart > t + 0.01) {
-        // Play lead-up before your line (context)
         const ok = await playSection(t, lineStart, speed);
         if (!ok || stopPlaybackRequested) break;
         t = lineStart;
@@ -2160,7 +2232,7 @@
       if (!okLine || stopPlaybackRequested) break;
       t = lineEnd;
 
-      const okRating = await askForRating(lineIndex, lines.length);
+      const okRating = await askForRating(originalIndex, rawLines.length);
       if (!okRating || stopPlaybackRequested) break;
 
       setPlayStatus('Playing scene…', true);
@@ -2175,7 +2247,7 @@
 
   async function repeatScene() {
     const scene = getCurrentScene();
-    if (!scene || !scene.audioDataUrl) {
+    if (!scene || (!scene.hasAudio && !scene.audioDataUrl)) {
       setMessage('No recording for this scene yet.', true);
       return;
     }
@@ -2216,7 +2288,7 @@
 
   async function lineDrill() {
     const scene = getCurrentScene();
-    if (!scene || !scene.audioDataUrl) {
+    if (!scene || (!scene.hasAudio && !scene.audioDataUrl)) {
       setMessage('No recording for this scene yet.', true);
       return;
     }
@@ -2231,11 +2303,14 @@
       return;
     }
 
-    const lines = (scene.lines || [])
-      .filter(ln => ln && typeof ln.start === 'number' && typeof ln.end === 'number' && ln.end > ln.start)
+    const rawLines = scene.lines || [];
+    const linesChrono = rawLines
+      .map((ln, idx) => ln && typeof ln.start === 'number' && typeof ln.end === 'number'
+        ? { ...ln, _idx: idx } : null)
+      .filter(ln => ln && ln.end > ln.start)
       .sort((a,b)=>a.start-b.start);
 
-    if (!lines.length) {
+    if (!linesChrono.length) {
       setMessage('No marked lines to drill.', true);
       return;
     }
@@ -2251,7 +2326,7 @@
     currentRunTotalLines = 0;
     startSessionIfNeeded();
 
-    for (const ln of lines) {
+    for (const ln of linesChrono) {
       if (stopPlaybackRequested) break;
       const contextStart = Math.max(0, ln.start - CONTEXT_SECONDS);
       const end = Math.min(duration, ln.end);
@@ -2265,7 +2340,7 @@
 
   async function warmupScene() {
     const scene = getCurrentScene();
-    if (!scene || !scene.audioDataUrl) {
+    if (!scene || (!scene.hasAudio && !scene.audioDataUrl)) {
       setMessage('No recording for this scene yet.', true);
       return;
     }
@@ -2281,11 +2356,7 @@
     }
 
     const baseSpeed = validateSpeed();
-    const speeds = [
-      Math.max(0.6, baseSpeed * 0.8),
-      baseSpeed,
-      Math.min(2.0, baseSpeed * 1.2)
-    ];
+    const speeds = [Math.max(0.6, baseSpeed * 0.8), baseSpeed, Math.min(2.0, baseSpeed * 1.2)];
 
     stopPlaybackRequested = false;
     isPlaying = true;
@@ -2318,10 +2389,9 @@
   warmupBtn.addEventListener('click', () => warmupScene());
   stopPlayBtn.addEventListener('click', () => stopPlayback());
 
-  /* Export / import */
-
+  // Export / import (metadata only – audio stays on-device)
   exportBtn.addEventListener('click', () => {
-    const data = { version: 1, scenes };
+    const data = { version: 2, scenes };
     const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -2332,7 +2402,7 @@
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    setMessage('Exported all shows and scenes as a JSON file.');
+    setMessage('Exported all shows and scenes (without audio blobs).');
   });
 
   importBtn.addEventListener('click', () => importFileInput.click());
@@ -2364,8 +2434,7 @@
     importFileInput.value = '';
   });
 
-  /* Init */
-
+  // Init
   loadScenes();
   loadSessionMeta();
   refreshShowList();
